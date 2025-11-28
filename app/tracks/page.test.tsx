@@ -78,6 +78,7 @@ vi.mock("@mui/x-data-grid", () => ({
                         React.createElement("button", {
                           key: action.key,
                           "aria-label": action.props.label,
+                          onClick: action.props.onClick,
                         }),
                       ),
                     );
@@ -260,5 +261,30 @@ describe("Tracks Page", () => {
     await user.click(addButton);
 
     expect(mockHandlers.handleAddNew).toHaveBeenCalledTimes(1);
+  });
+
+  it("should call handleDeleteClick when delete button is clicked", async () => {
+    const user = userEvent.setup();
+    const mockDeleteHandler = vi.fn();
+    const mockHandlersWithDelete = {
+      ...mockHandlers,
+      handleDeleteClick: vi.fn(() => mockDeleteHandler),
+    };
+
+    vi.mocked(useTracks).mockReturnValue({
+      rows: mockTracks,
+      isLoading: false,
+      rowModesModel: {} as GridRowModesModel,
+      ...mockHandlersWithDelete,
+    });
+
+    const { container } = render(<Tracks />);
+    const dataGrid = container.querySelector('[data-testid="data-grid"]');
+
+    const deleteButtons = within(dataGrid!).getAllByLabelText("Delete");
+    await user.click(deleteButtons[0]);
+
+    expect(mockHandlersWithDelete.handleDeleteClick).toHaveBeenCalledWith("1");
+    expect(mockDeleteHandler).toHaveBeenCalledTimes(1);
   });
 });

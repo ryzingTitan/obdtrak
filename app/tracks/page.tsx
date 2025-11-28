@@ -7,11 +7,11 @@ import {
   GridEventListener,
   GridRowEditStopReasons,
   GridRowModes,
+  Toolbar,
+  ToolbarButton,
 } from "@mui/x-data-grid";
 import { useMemo } from "react";
-import Toolbar from "@mui/material/Toolbar";
 import Tooltip from "@mui/material/Tooltip";
-import IconButton from "@mui/material/IconButton";
 import Add from "@mui/icons-material/Add";
 import Save from "@mui/icons-material/Save";
 import Cancel from "@mui/icons-material/Cancel";
@@ -19,25 +19,9 @@ import Edit from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/Delete";
 import { useTracks } from "@/hooks/useTracks";
 
-interface EditToolbarProps {
-  onAddNew: () => void;
-}
-
-function EditToolbar({ onAddNew }: EditToolbarProps) {
-  return (
-    <Toolbar>
-      <Tooltip title="Add track">
-        <IconButton onClick={onAddNew} size="small">
-          <Add />
-        </IconButton>
-      </Tooltip>
-    </Toolbar>
-  );
-}
-
 export default function Tracks() {
   const {
-    rows: data,
+    rows,
     isLoading,
     rowModesModel,
     handleRowModesModelChange,
@@ -48,6 +32,18 @@ export default function Tracks() {
     processRowUpdate,
     handleAddNew,
   } = useTracks();
+
+  function EditToolbar() {
+    return (
+      <Toolbar>
+        <Tooltip title="Add track">
+          <ToolbarButton onClick={handleAddNew} size="small">
+            <Add />
+          </ToolbarButton>
+        </Tooltip>
+      </Toolbar>
+    );
+  }
 
   const handleRowEditStop: GridEventListener<"rowEditStop"> = (
     params,
@@ -151,7 +147,7 @@ export default function Tracks() {
 
   return (
     <DataGrid
-      rows={data || []}
+      rows={rows || []}
       columns={columns}
       loading={isLoading}
       editMode="row"
@@ -159,19 +155,11 @@ export default function Tracks() {
       onRowModesModelChange={handleRowModesModelChange}
       onRowEditStop={handleRowEditStop}
       processRowUpdate={processRowUpdate}
-      slots={{ toolbar: EditToolbar }}
-      slotProps={{
-        toolbar: {
-          onAddNew: handleAddNew,
-        },
+      slots={{
+        toolbar: EditToolbar,
       }}
       showToolbar
       autosizeOnMount
-      autosizeOptions={{
-        columns: ["name", "latitude", "longitude", "actions"],
-        includeHeaders: true,
-        includeOutliers: true,
-      }}
       sx={{ m: 2 }}
     />
   );

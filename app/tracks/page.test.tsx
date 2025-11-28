@@ -1,69 +1,114 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import Tracks from "./page";
 import { useTracks } from "@/hooks/useTracks";
 import Track from "@/types/api";
-import { GridRowModes, GridRowModesModel } from "@mui/x-data-grid";
+import {
+  GridRowModes,
+  GridRowModesModel,
+  GridColDef,
+  GridValidRowModel,
+} from "@mui/x-data-grid";
 import React from "react";
 
 vi.mock("@/hooks/useTracks");
 
+interface MockDataGridProps {
+  rows: GridValidRowModel[];
+  columns: GridColDef[];
+  loading?: boolean;
+  slots?: {
+    toolbar?: React.ComponentType<{ onAddNew: () => void }>;
+  };
+  slotProps?: {
+    toolbar?: { onAddNew: () => void };
+  };
+}
+
+interface MockGridActionsCellItemProps {
+  icon: React.ReactNode;
+  label: string;
+  onClick: () => void;
+}
+
 vi.mock("@mui/x-data-grid", () => ({
-  DataGrid: vi.fn(({ rows, columns, loading }) => {
-    if (loading) {
-      return React.createElement("div", { role: "progressbar" }, "Loading...");
-    }
-    return React.createElement(
-      "div",
-      { "data-testid": "data-grid" },
-      React.createElement(
-        "table",
-        {},
+  DataGrid: vi.fn(
+    ({ rows, columns, loading, slots, slotProps }: MockDataGridProps) => {
+      if (loading) {
+        return React.createElement(
+          "div",
+          { role: "progressbar" },
+          "Loading...",
+        );
+      }
+      return React.createElement(
+        "div",
+        { "data-testid": "data-grid" },
+        slots?.toolbar &&
+          React.createElement(slots.toolbar, slotProps?.toolbar || {}),
         React.createElement(
-          "thead",
+          "table",
           {},
           React.createElement(
-            "tr",
+            "thead",
             {},
-            ...columns.map((col: any) =>
-              React.createElement("th", { key: col.field }, col.headerName),
-            ),
-          ),
-        ),
-        React.createElement(
-          "tbody",
-          {},
-          ...rows.map((row: any) =>
             React.createElement(
               "tr",
-              { key: row.id },
-              ...columns.map((col: any) => {
-                if (col.type === "actions") {
-                  const actions = col.getActions({ id: row.id });
-                  return React.createElement(
-                    "td",
-                    { key: col.field },
-                    ...actions.map((action: any) =>
-                      React.createElement("button", {
-                        key: action.key,
-                        "aria-label": action.props.label,
-                      }),
-                    ),
-                  );
-                }
-                const value = col.valueFormatter
-                  ? col.valueFormatter(row[col.field])
-                  : row[col.field];
-                return React.createElement("td", { key: col.field }, value);
-              }),
+              {},
+              ...columns.map((col) =>
+                React.createElement("th", { key: col.field }, col.headerName),
+              ),
+            ),
+          ),
+          React.createElement(
+            "tbody",
+            {},
+            ...rows.map((row) =>
+              React.createElement(
+                "tr",
+                { key: row.id },
+                ...columns.map((col) => {
+                  if (col.type === "actions") {
+                    const actions = col.getActions!({ id: row.id });
+                    return React.createElement(
+                      "td",
+                      { key: col.field },
+                      ...actions.map((action) =>
+                        React.createElement("button", {
+                          key: action.key,
+                          "aria-label": action.props.label,
+                        }),
+                      ),
+                    );
+                  }
+                  const value = col.valueFormatter
+                    ? col.valueFormatter(row[col.field])
+                    : row[col.field];
+                  return React.createElement("td", { key: col.field }, value);
+                }),
+              ),
             ),
           ),
         ),
-      ),
-    );
-  }),
-  GridActionsCellItem: ({ icon, label, onClick }: any) =>
+      );
+    },
+  ),
+  GridActionsCellItem: ({
+    icon,
+    label,
+    onClick,
+  }: MockGridActionsCellItemProps) =>
     React.createElement("button", { "aria-label": label, onClick }, icon),
+  Toolbar: ({ children }: { children: React.ReactNode }) =>
+    React.createElement("div", { role: "toolbar" }, children),
+  ToolbarButton: ({
+    children,
+    onClick,
+  }: {
+    children: React.ReactNode;
+    onClick: () => void;
+  }) => React.createElement("button", { onClick }, children),
   GridRowEditStopReasons: { rowFocusOut: "rowFocusOut" },
   GridRowModes: { Edit: "edit", View: "view" },
 }));
@@ -194,5 +239,26 @@ describe("Tracks Page", () => {
       within(dataGrid!).queryByText("Laguna Seca"),
     ).not.toBeInTheDocument();
     expect(within(dataGrid!).getByText("Track Name")).toBeInTheDocument();
+  });
+
+  it("should render the toolbar with Add button", () => {
+    const { container } = render(<Tracks />);
+
+    const toolbar = container.querySelector('[role="toolbar"]');
+    expect(toolbar).toBeInTheDocument();
+
+    const addButton = within(toolbar!).getByRole("button");
+    expect(addButton).toBeInTheDocument();
+  });
+
+  it("should call handleAddNew when Add button is clicked", async () => {
+    const user = userEvent.setup();
+    const { container } = render(<Tracks />);
+
+    const toolbar = container.querySelector('[role="toolbar"]');
+    const addButton = within(toolbar!).getByRole("button");
+    await user.click(addButton);
+
+    expect(mockHandlers.handleAddNew).toHaveBeenCalledTimes(1);
   });
 });

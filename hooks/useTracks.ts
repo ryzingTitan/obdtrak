@@ -1,43 +1,62 @@
 import useSWR from "swr";
 import Track from "@/types/api";
-import { GridRowId, GridRowModes, GridRowModesModel, GridValidRowModel } from "@mui/x-data-grid";
+import {
+  GridRowId,
+  GridRowModes,
+  GridRowModesModel,
+  GridValidRowModel,
+} from "@mui/x-data-grid";
 import { useCallback, useState } from "react";
-import { createTrack, deleteTrack, getAllTracks, updateTrack } from "@/lib/tracks";
+import {
+  createTrack,
+  deleteTrack,
+  getAllTracks,
+  updateTrack,
+} from "@/lib/tracks";
 import { useSnackbar } from "notistack";
 
 export const useTracks = () => {
   const swrKey = `/tracks`;
-  const { data, isLoading, mutate } = useSWR<Track[]>(
-    swrKey,
-    getAllTracks,
-  );
+  const { data, isLoading, mutate } = useSWR<Track[]>(swrKey, getAllTracks);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const { enqueueSnackbar } = useSnackbar();
 
-  const handleRowModesModelChange = (newModel: GridRowModesModel) => {
-    setRowModesModel(newModel);
-  };
+  const handleRowModesModelChange = useCallback(
+    (newModel: GridRowModesModel) => {
+      // Defer state update to avoid updating state during render
+      queueMicrotask(() => {
+        setRowModesModel(newModel);
+      });
+    },
+    [],
+  );
 
   const handleEditClick = useCallback(
     (id: GridRowId) => () => {
-      setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
+      setRowModesModel((prev) => ({
+        ...prev,
+        [id]: { mode: GridRowModes.Edit },
+      }));
     },
-    [rowModesModel],
+    [],
   );
 
   const handleSaveClick = useCallback(
     (id: GridRowId) => () => {
-      setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
+      setRowModesModel((prev) => ({
+        ...prev,
+        [id]: { mode: GridRowModes.View },
+      }));
     },
-    [rowModesModel],
+    [],
   );
 
   const handleCancelClick = useCallback(
     (id: GridRowId) => () => {
-      setRowModesModel({
-        ...rowModesModel,
+      setRowModesModel((prev) => ({
+        ...prev,
         [id]: { mode: GridRowModes.View, ignoreModifications: true },
-      });
+      }));
 
       // If the row is a new row, remove it from the cache
       if (String(id).startsWith("new-")) {
@@ -47,7 +66,7 @@ export const useTracks = () => {
         );
       }
     },
-    [rowModesModel, mutate],
+    [mutate],
   );
 
   const handleDeleteClick = useCallback(
@@ -126,10 +145,13 @@ export const useTracks = () => {
     // Use mutate to add to the local cache without revalidating
     mutate([newRow, ...(data || [])], false);
 
-    setRowModesModel((prev) => ({
-      ...prev,
-      [id]: { mode: GridRowModes.Edit, fieldToFocus: "name" },
-    }));
+    // Defer state update to avoid updating state during render
+    queueMicrotask(() => {
+      setRowModesModel((prev) => ({
+        ...prev,
+        [id]: { mode: GridRowModes.Edit, fieldToFocus: "name" },
+      }));
+    });
   }, [data, mutate]);
 
   return {

@@ -45,10 +45,7 @@ export async function updateTrack(
   }
 }
 
-export async function deleteTrack(
-  url: string,
-  id: string,
-): Promise<void> {
+export async function deleteTrack(url: string, id: string): Promise<void> {
   try {
     await fetchWithAuth<void>(`${url}/${id}`, { method: "DELETE" });
   } catch (error) {

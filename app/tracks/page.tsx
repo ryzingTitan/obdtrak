@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   DataGrid,
@@ -6,7 +6,7 @@ import {
   GridColDef,
   GridEventListener,
   GridRowEditStopReasons,
-  GridRowModes
+  GridRowModes,
 } from "@mui/x-data-grid";
 import { useMemo } from "react";
 import Toolbar from "@mui/material/Toolbar";
@@ -66,7 +66,6 @@ export default function Tracks() {
         headerAlign: "center",
         align: "center",
         editable: true,
-        flex: 1,
       },
       {
         field: "latitude",
@@ -75,7 +74,6 @@ export default function Tracks() {
         headerAlign: "center",
         align: "center",
         editable: true,
-        flex: 1,
         valueFormatter: (value?: number) => value?.toString(),
       },
       {
@@ -85,7 +83,6 @@ export default function Tracks() {
         align: "center",
         editable: true,
         type: "number",
-        flex: 1,
         valueFormatter: (value?: number) => value?.toString(),
       },
       // {
@@ -127,7 +124,7 @@ export default function Tracks() {
           return [
             <GridActionsCellItem
               key="edit"
-              icon={<Edit/>}
+              icon={<Edit />}
               label="Edit"
               onClick={handleEditClick(id)}
               color="inherit"
@@ -152,7 +149,6 @@ export default function Tracks() {
     ],
   );
 
-
   return (
     <DataGrid
       rows={data || []}
@@ -170,7 +166,13 @@ export default function Tracks() {
         },
       }}
       showToolbar
+      autosizeOnMount
+      autosizeOptions={{
+        columns: ["name", "latitude", "longitude", "actions"],
+        includeHeaders: true,
+        includeOutliers: true,
+      }}
       sx={{ m: 2 }}
     />
-  )
+  );
 }

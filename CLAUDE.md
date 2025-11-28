@@ -20,6 +20,10 @@ npm run test             # Same as above
 npm run lint             # Run ESLint
 npx tsc --noEmit        # Type check (no dedicated script)
 
+# Formatting
+npm run format           # Format code with Prettier
+npm run format:check     # Check if code is formatted
+
 # Building
 npm run build            # Production build with Turbopack
 npm start                # Start production server
@@ -121,6 +125,13 @@ Required in `.env.local`:
 - `API_BASE_URL` - Backend API base URL (e.g., http://localhost:3001/api)
 
 ## Code Standards (from AGENTS.md)
+
+**Code Formatting**:
+
+- Use Prettier for all code formatting
+- Run `npm run format` before committing changes
+- Prettier handles formatting for TypeScript, JavaScript, JSON, Markdown, and YAML files
+- Do not manually format code - let Prettier handle all formatting decisions
 
 **Type Safety**:
 

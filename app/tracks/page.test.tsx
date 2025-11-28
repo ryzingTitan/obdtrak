@@ -287,4 +287,87 @@ describe("Tracks Page", () => {
     expect(mockHandlersWithDelete.handleDeleteClick).toHaveBeenCalledWith("1");
     expect(mockDeleteHandler).toHaveBeenCalledTimes(1);
   });
+
+  it("should call handleEditClick when edit button is clicked", async () => {
+    const user = userEvent.setup();
+    const mockEditHandler = vi.fn();
+    const mockHandlersWithEdit = {
+      ...mockHandlers,
+      handleEditClick: vi.fn(() => mockEditHandler),
+    };
+
+    vi.mocked(useTracks).mockReturnValue({
+      rows: mockTracks,
+      isLoading: false,
+      rowModesModel: {} as GridRowModesModel,
+      ...mockHandlersWithEdit,
+    });
+
+    const { container } = render(<Tracks />);
+    const dataGrid = container.querySelector('[data-testid="data-grid"]');
+
+    const editButtons = within(dataGrid!).getAllByLabelText("Edit");
+    await user.click(editButtons[0]);
+
+    expect(mockHandlersWithEdit.handleEditClick).toHaveBeenCalledWith("1");
+    expect(mockEditHandler).toHaveBeenCalledTimes(1);
+  });
+
+  it("should call handleSaveClick when save button is clicked", async () => {
+    const user = userEvent.setup();
+    const mockSaveHandler = vi.fn();
+    const mockHandlersWithSave = {
+      ...mockHandlers,
+      handleSaveClick: vi.fn(() => mockSaveHandler),
+    };
+
+    const rowModesModel: GridRowModesModel = {
+      "1": { mode: GridRowModes.Edit },
+    };
+
+    vi.mocked(useTracks).mockReturnValue({
+      rows: mockTracks,
+      isLoading: false,
+      rowModesModel,
+      ...mockHandlersWithSave,
+    });
+
+    const { container } = render(<Tracks />);
+    const dataGrid = container.querySelector('[data-testid="data-grid"]');
+
+    const saveButton = within(dataGrid!).getByLabelText("Save");
+    await user.click(saveButton);
+
+    expect(mockHandlersWithSave.handleSaveClick).toHaveBeenCalledWith("1");
+    expect(mockSaveHandler).toHaveBeenCalledTimes(1);
+  });
+
+  it("should call handleCancelClick when cancel button is clicked", async () => {
+    const user = userEvent.setup();
+    const mockCancelHandler = vi.fn();
+    const mockHandlersWithCancel = {
+      ...mockHandlers,
+      handleCancelClick: vi.fn(() => mockCancelHandler),
+    };
+
+    const rowModesModel: GridRowModesModel = {
+      "1": { mode: GridRowModes.Edit },
+    };
+
+    vi.mocked(useTracks).mockReturnValue({
+      rows: mockTracks,
+      isLoading: false,
+      rowModesModel,
+      ...mockHandlersWithCancel,
+    });
+
+    const { container } = render(<Tracks />);
+    const dataGrid = container.querySelector('[data-testid="data-grid"]');
+
+    const cancelButton = within(dataGrid!).getByLabelText("Cancel");
+    await user.click(cancelButton);
+
+    expect(mockHandlersWithCancel.handleCancelClick).toHaveBeenCalledWith("1");
+    expect(mockCancelHandler).toHaveBeenCalledTimes(1);
+  });
 });

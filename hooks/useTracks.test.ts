@@ -138,6 +138,33 @@ describe("useTracks", () => {
     });
   });
 
+  it("should set existing row to view mode with ignoreModifications when handleCancelClick is called", async () => {
+    const { result } = renderHook(() => useTracks(), { wrapper });
+
+    await waitFor(() => {
+      expect(result.current.rows).toEqual(mockTracks);
+    });
+
+    act(() => {
+      const editHandler = result.current.handleEditClick("1");
+      editHandler();
+    });
+
+    expect(result.current.rowModesModel["1"]?.mode).toBe("edit");
+
+    act(() => {
+      const cancelHandler = result.current.handleCancelClick("1");
+      cancelHandler();
+    });
+
+    expect(result.current.rowModesModel["1"]?.mode).toBe("view");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((result.current.rowModesModel["1"] as any)?.ignoreModifications).toBe(
+      true,
+    );
+    expect(result.current.rows?.length).toBe(2);
+  });
+
   it("should call deleteTrack when handleDeleteClick is called", async () => {
     vi.mocked(deleteTrack).mockResolvedValue();
 

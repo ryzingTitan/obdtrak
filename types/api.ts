@@ -4,3 +4,10 @@ export default interface Track {
   latitude: number;
   longitude: number;
 }
+
+export interface Car {
+  id: string;
+  year: number;
+  make: string;
+  model: string;
+}

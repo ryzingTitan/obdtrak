@@ -95,6 +95,7 @@ export default function TracksDataGrid() {
         headerAlign: "center",
         align: "center",
         editable: true,
+        flex: 1,
       },
       {
         field: "latitude",
@@ -104,6 +105,7 @@ export default function TracksDataGrid() {
         align: "center",
         editable: true,
         valueFormatter: (value?: number) => value?.toString(),
+        flex: 1,
       },
       {
         field: "longitude",
@@ -113,11 +115,13 @@ export default function TracksDataGrid() {
         editable: true,
         type: "number",
         valueFormatter: (value?: number) => value?.toString(),
+        flex: 1,
       },
       {
         field: "actions",
         type: "actions",
         headerName: "Actions",
+        flex: 1,
         getActions: ({ id }) => {
           const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
           if (isInEditMode) {

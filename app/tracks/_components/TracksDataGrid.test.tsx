@@ -14,6 +14,26 @@ import React from "react";
 
 vi.mock("@/hooks/useTracks");
 
+vi.mock("@/components/TrackPreviewModal", () => ({
+  default: ({
+    track,
+    open,
+    onClose,
+  }: {
+    track: Track | null;
+    open: boolean;
+    onClose: () => void;
+  }) => {
+    if (!open || !track) return null;
+    return React.createElement(
+      "div",
+      { "data-testid": "track-preview-modal" },
+      React.createElement("h2", {}, `Preview Track: ${track.name}`),
+      React.createElement("button", { onClick: onClose }, "Close"),
+    );
+  },
+}));
+
 interface MockDataGridProps {
   rows: GridValidRowModel[];
   columns: GridColDef[];
@@ -215,10 +235,13 @@ describe("TracksDataGrid", () => {
     expect(screen.getByRole("progressbar")).toBeInTheDocument();
   });
 
-  it("should display edit and delete actions for each row", () => {
+  it("should display preview, edit, and delete actions for each row", () => {
     const { container } = render(<TracksDataGrid />);
     const dataGrid = container.querySelector('[data-testid="data-grid"]');
 
+    const previewButtons = within(dataGrid as HTMLElement).getAllByLabelText(
+      "Preview",
+    );
     const editButtons = within(dataGrid as HTMLElement).getAllByLabelText(
       "Edit",
     );
@@ -226,6 +249,7 @@ describe("TracksDataGrid", () => {
       "Delete",
     );
 
+    expect(previewButtons).toHaveLength(mockTracks.length);
     expect(editButtons).toHaveLength(mockTracks.length);
     expect(deleteButtons).toHaveLength(mockTracks.length);
   });
@@ -401,5 +425,36 @@ describe("TracksDataGrid", () => {
 
     expect(mockHandlersWithCancel.handleCancelClick).toHaveBeenCalledWith("1");
     expect(mockCancelHandler).toHaveBeenCalledTimes(1);
+  });
+
+  it("should open preview modal when preview button is clicked", async () => {
+    const user = userEvent.setup();
+    const { container } = render(<TracksDataGrid />);
+    const dataGrid = container.querySelector('[data-testid="data-grid"]');
+
+    const previewButtons = within(dataGrid as HTMLElement).getAllByLabelText(
+      "Preview",
+    );
+    await user.click(previewButtons[0]);
+
+    expect(screen.getByTestId("track-preview-modal")).toBeInTheDocument();
+    expect(screen.getByText("Preview Track: Laguna Seca")).toBeInTheDocument();
+  });
+
+  it("should display correct track in preview modal", async () => {
+    const user = userEvent.setup();
+    const { container } = render(<TracksDataGrid />);
+    const dataGrid = container.querySelector('[data-testid="data-grid"]');
+
+    const previewButtons = within(dataGrid as HTMLElement).getAllByLabelText(
+      "Preview",
+    );
+    await user.click(previewButtons[1]);
+
+    const modals = screen.getAllByTestId("track-preview-modal");
+    expect(modals.length).toBeGreaterThan(0);
+    expect(
+      screen.getByText("Preview Track: Circuit of the Americas"),
+    ).toBeInTheDocument();
   });
 });

@@ -3,10 +3,10 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { Roboto } from "next/font/google";
 import { ThemeProvider } from "@mui/material/styles";
-import Header from "@/components/Header";
+import Header from "@/components/Header/Header";
 import theme from "@/theme";
-import Footer from "@/components/Footer";
-import { SWRConfig } from "swr";
+import Footer from "@/components/Footer/Footer";
+import { Providers } from "@/components/Providers/Providers";
 
 export const metadata: Metadata = {
   title: "OBDTrak",
@@ -31,16 +31,11 @@ export default function RootLayout({
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>
             <CssBaseline />
-            <SWRConfig
-              value={{
-                refreshInterval: 3000,
-                revalidateOnFocus: true,
-              }}
-            >
+            <Providers>
               <Header />
               {children}
               <Footer />
-            </SWRConfig>
+            </Providers>
           </ThemeProvider>
         </AppRouterCacheProvider>
       </body>

@@ -32,6 +32,12 @@ describe("isIdTokenExpired", () => {
   it("should return true for an undefined token", () => {
     expect(isIdTokenExpired(undefined)).toBe(true);
   });
+
+  it("should return true for a malformed token that throws during parsing", () => {
+    const malformedToken =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.!!!invalid!!!.test";
+    expect(isIdTokenExpired(malformedToken)).toBe(true);
+  });
 });
 
 describe("ensureValidSession", () => {
@@ -44,21 +50,53 @@ describe("ensureValidSession", () => {
   });
 
   it("should redirect to login if idToken is missing", () => {
-    ensureValidSession({ user: {}, tokenSet: {} });
+    ensureValidSession({
+      user: { sub: "test-user-id" },
+      tokenSet: {
+        accessToken: "test-access-token",
+        expiresAt: Date.now() / 1000 + 3600,
+      },
+      internal: {
+        sid: "test-session-id",
+        createdAt: Date.now() / 1000,
+      },
+    });
     expect(redirect).toHaveBeenCalledWith(loginUrl);
   });
 
   it("should redirect to login if idToken is expired", () => {
     const expiredToken =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MDk0NTkyMDB9.test"; // Expired
-    ensureValidSession({ user: {}, tokenSet: { idToken: expiredToken } });
+    ensureValidSession({
+      user: { sub: "test-user-id" },
+      tokenSet: {
+        accessToken: "test-access-token",
+        idToken: expiredToken,
+        expiresAt: Date.now() / 1000 + 3600,
+      },
+      internal: {
+        sid: "test-session-id",
+        createdAt: Date.now() / 1000,
+      },
+    });
     expect(redirect).toHaveBeenCalledWith(loginUrl);
   });
 
   it("should not redirect if session and idToken are valid", () => {
     const validToken =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE5MjQ5OTIwMDB9.test"; // Not expired
-    ensureValidSession({ user: {}, tokenSet: { idToken: validToken } });
+    ensureValidSession({
+      user: { sub: "test-user-id" },
+      tokenSet: {
+        accessToken: "test-access-token",
+        idToken: validToken,
+        expiresAt: Date.now() / 1000 + 3600,
+      },
+      internal: {
+        sid: "test-session-id",
+        createdAt: Date.now() / 1000,
+      },
+    });
     expect(redirect).not.toHaveBeenCalled();
   });
 });

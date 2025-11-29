@@ -9,7 +9,3 @@ export class ApiError extends Error {
     this.statusText = statusText;
   }
 }
-
-export function isApiError(error: unknown): error is ApiError {
-  return error instanceof ApiError;
-}

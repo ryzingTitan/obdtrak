@@ -89,7 +89,7 @@ describe("Tracks Server Actions", () => {
     it("should handle errors when fetching tracks fails", async () => {
       vi.mocked(fetchWithAuth).mockRejectedValue(new Error("Network error"));
 
-      await expect(getAllTracks("/tracks")).rejects.toBe(
+      await expect(getAllTracks("/tracks")).rejects.toThrow(
         "Failed to fetch tracks",
       );
     });
@@ -130,7 +130,7 @@ describe("Tracks Server Actions", () => {
         longitude: 0,
       };
 
-      await expect(createTrack("/tracks", newTrack)).rejects.toBe(
+      await expect(createTrack("/tracks", newTrack)).rejects.toThrow(
         "Failed to create track",
       );
     });
@@ -167,7 +167,7 @@ describe("Tracks Server Actions", () => {
         name: "Test Track",
       };
 
-      await expect(updateTrack("/tracks", "1", patch)).rejects.toBe(
+      await expect(updateTrack("/tracks", "1", patch)).rejects.toThrow(
         "Failed to update track",
       );
     });
@@ -187,7 +187,7 @@ describe("Tracks Server Actions", () => {
     it("should handle errors when deleting a track fails", async () => {
       vi.mocked(fetchWithAuth).mockRejectedValue(new Error("Network error"));
 
-      await expect(deleteTrack("/tracks", "1")).rejects.toBe(
+      await expect(deleteTrack("/tracks", "1")).rejects.toThrow(
         "Failed to delete track",
       );
     });

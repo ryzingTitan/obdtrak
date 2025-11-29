@@ -9,11 +9,14 @@ import Stack from "@mui/material/Stack";
 import Image from "next/image";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useUser } from "@auth0/nextjs-auth0";
-import { redirect } from "next/navigation";
 import { logoutUrl } from "@/lib/auth0";
 
 export default function Header() {
   const { user } = useUser();
+
+  const handleLogout = () => {
+    window.location.href = logoutUrl;
+  };
 
   return (
     <AppBar position="static">
@@ -29,11 +32,7 @@ export default function Header() {
             <Avatar src={user?.image ?? undefined} />
           </Tooltip>
           <Tooltip title="Logout">
-            <IconButton
-              onClick={async () => {
-                redirect(logoutUrl);
-              }}
-            >
+            <IconButton onClick={handleLogout}>
               <LogoutIcon />
             </IconButton>
           </Tooltip>

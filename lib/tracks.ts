@@ -3,16 +3,12 @@
 import Track from "@/types/api";
 import { fetchWithAuth } from "./api";
 
-const handleTrackError = (error: unknown, message: string) => {
-  console.error(`${message}:`, error);
-  return Promise.reject(message);
-};
-
 export async function getAllTracks(url: string): Promise<Track[]> {
   try {
     return await fetchWithAuth<Track[]>(url);
   } catch (error) {
-    return handleTrackError(error, "Failed to fetch tracks");
+    console.error("Failed to fetch tracks:", error);
+    throw new Error("Failed to fetch tracks");
   }
 }
 
@@ -26,7 +22,8 @@ export async function createTrack(
       body: track,
     });
   } catch (error) {
-    return handleTrackError(error, "Failed to create track");
+    console.error("Failed to create track:", error);
+    throw new Error("Failed to create track");
   }
 }
 
@@ -41,7 +38,8 @@ export async function updateTrack(
       body: patch,
     });
   } catch (error) {
-    return handleTrackError(error, "Failed to update track");
+    console.error("Failed to update track:", error);
+    throw new Error("Failed to update track");
   }
 }
 
@@ -49,6 +47,7 @@ export async function deleteTrack(url: string, id: string): Promise<void> {
   try {
     await fetchWithAuth<void>(`${url}/${id}`, { method: "DELETE" });
   } catch (error) {
-    return handleTrackError(error, "Failed to delete track");
+    console.error("Failed to delete track:", error);
+    throw new Error("Failed to delete track");
   }
 }

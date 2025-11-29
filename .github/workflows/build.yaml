@@ -2,7 +2,7 @@ name: Build & Push Next.js Docker Image
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 env:
@@ -13,10 +13,10 @@ jobs:
   build-and-push-docker-image:
     runs-on: ubuntu-latest
     permissions:
-      contents: write 
+      contents: write
       packages: write
       id-token: write
-      
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -34,14 +34,14 @@ jobs:
         run: |
           TAG_NAME="v${{ steps.package.outputs.VERSION }}"
           echo "Attempting to create and push Git tag: $TAG_NAME"
-          
+
           # Configure Git user for the commit/tag action
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          
+
           # Create the annotated tag on the current commit
           git tag -a $TAG_NAME -m "Release version $TAG_NAME"
-          
+
           # Push the tag to the remote repository
           git push origin $TAG_NAME
 

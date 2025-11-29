@@ -158,10 +158,14 @@ describe("useTracks", () => {
     });
 
     expect(result.current.rowModesModel["1"]?.mode).toBe("view");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect((result.current.rowModesModel["1"] as any)?.ignoreModifications).toBe(
-      true,
-    );
+    expect(
+      (
+        result.current.rowModesModel["1"] as {
+          mode: string;
+          ignoreModifications?: boolean;
+        }
+      )?.ignoreModifications,
+    ).toBe(true);
     expect(result.current.rows?.length).toBe(2);
   });
 

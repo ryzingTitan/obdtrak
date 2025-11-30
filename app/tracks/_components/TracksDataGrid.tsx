@@ -104,8 +104,8 @@ export default function TracksDataGrid() {
         headerAlign: "center",
         align: "center",
         editable: true,
-        valueFormatter: (value?: number) => value?.toString(),
         flex: 1,
+        valueFormatter: (value?: number) => value?.toString(),
       },
       {
         field: "longitude",
@@ -114,8 +114,8 @@ export default function TracksDataGrid() {
         align: "center",
         editable: true,
         type: "number",
-        valueFormatter: (value?: number) => value?.toString(),
         flex: 1,
+        valueFormatter: (value?: number) => value?.toString(),
       },
       {
         field: "actions",
@@ -137,7 +137,6 @@ export default function TracksDataGrid() {
                 icon={<Cancel />}
                 label="Cancel"
                 onClick={handleCancelClick(id)}
-                color="inherit"
               />,
             ];
           }
@@ -147,21 +146,18 @@ export default function TracksDataGrid() {
               icon={<Preview />}
               label="Preview"
               onClick={handlePreviewClick(id.toString())}
-              color="inherit"
             />,
             <GridActionsCellItem
               key="edit"
               icon={<Edit />}
               label="Edit"
               onClick={handleEditClick(id)}
-              color="inherit"
             />,
             <GridActionsCellItem
               key="delete"
               icon={<Delete />}
               label="Delete"
               onClick={handleDeleteClick(id)}
-              color="inherit"
             />,
           ];
         },

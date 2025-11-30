@@ -13,11 +13,10 @@ import { useSnackbar } from "notistack";
 export const useCars = () => {
   const swrKey = `/cars`;
   const { data, isLoading, mutate } = useSWR<Car[]>(swrKey, getAllCars);
-  const [rows, setRows] = useState<Car[]>([]);
+  const [rows, setRows] = useState<readonly Car[]>([]);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const { enqueueSnackbar } = useSnackbar();
 
-  // Sync server data with local state, preserving temporary rows
   useEffect(() => {
     if (data) {
       setRows((currentRows) => {
@@ -32,104 +31,92 @@ export const useCars = () => {
     }
   }, [data]);
 
-  const handleRowModesModelChange = useCallback(
-    (newModel: GridRowModesModel) => {
-      // Defer state update to avoid updating state during render
-      queueMicrotask(() => {
-        setRowModesModel(newModel);
-      });
-    },
-    [],
-  );
+  const handleRowModesModelChange = (newModel: GridRowModesModel) => {
+    setRowModesModel(newModel);
+  };
 
   const handleEditClick = useCallback(
     (id: GridRowId) => () => {
-      setRowModesModel((prev) => ({
-        ...prev,
-        [id]: { mode: GridRowModes.Edit },
-      }));
+      setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
     },
-    [],
+    [rowModesModel],
   );
 
   const handleSaveClick = useCallback(
     (id: GridRowId) => () => {
-      setRowModesModel((prev) => ({
-        ...prev,
-        [id]: { mode: GridRowModes.View },
-      }));
+      setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
     },
-    [],
+    [rowModesModel],
   );
 
   const handleCancelClick = useCallback(
     (id: GridRowId) => () => {
-      setRowModesModel((prev) => ({
-        ...prev,
+      setRowModesModel({
+        ...rowModesModel,
         [id]: { mode: GridRowModes.View, ignoreModifications: true },
-      }));
+      });
 
-      // If the row is a new row, remove it from local state
       if (String(id).startsWith("new-")) {
         setRows((currentRows) => currentRows.filter((row) => row.id !== id));
       }
     },
-    [],
+    [rowModesModel],
   );
 
   const handleDeleteClick = useCallback(
     (id: GridRowId) => async () => {
-      const toRemove = rows.find((r) => r.id === id);
-      if (!toRemove) return;
+      const originalRows = [...rows];
+      const newRows = rows.filter((row) => row.id !== id);
+      setRows(newRows);
 
-      // Optimistically remove from local state
-      setRows((currentRows) => currentRows.filter((r) => r.id !== id));
+      if (String(id).startsWith("new-")) {
+        return;
+      }
 
       try {
-        if (!String(toRemove.id).startsWith("new-")) {
-          await deleteCar(swrKey, String(toRemove.id));
-          await mutate();
-          enqueueSnackbar("Car deleted", { variant: "success" });
-        }
+        await deleteCar(swrKey, String(id));
+        await mutate(
+          newRows.filter((r) => !String(r.id).startsWith("new-")),
+          false,
+        );
+        enqueueSnackbar("Car deleted", { variant: "success" });
       } catch (e) {
         console.error(e);
+        setRows(originalRows);
         enqueueSnackbar("Failed to delete car", { variant: "error" });
-        // Restore the row on error
-        setRows((currentRows) => [toRemove, ...currentRows]);
       }
     },
     [rows, swrKey, mutate, enqueueSnackbar],
   );
 
   const processRowUpdate = useCallback(
-    async (
-      newRow: GridValidRowModel,
-      oldRow: GridValidRowModel,
-    ): Promise<GridValidRowModel> => {
+    async (newRow: GridValidRowModel): Promise<GridValidRowModel> => {
       const payload: Partial<Car> = {
         ...newRow,
       };
 
       try {
         if (String(newRow.id).startsWith("new-")) {
-          // Create on server
           const created = await createCar(swrKey, payload);
-
-          // Remove temp row and let the server data be merged by useEffect
           setRows((currentRows) =>
-            currentRows.filter((r) => r.id !== newRow.id),
+            currentRows.map((row) => (row.id === newRow.id ? created : row)),
           );
-
-          // Trigger revalidation - useEffect will merge the new server data
-          await mutate();
+          await mutate(
+            (currentData) => [created, ...(currentData || [])],
+            false,
+          );
           enqueueSnackbar("Car created", { variant: "success" });
           return created;
         } else {
-          // Update on server
-          const updated = await updateCar(swrKey, String(oldRow.id), payload);
-
-          // Trigger revalidation - useEffect will merge the updated server data
-          await mutate();
+          const updated = await updateCar(swrKey, String(newRow.id), payload);
+          setRows((currentRows) =>
+            currentRows.map((row) => (row.id === updated.id ? updated : row)),
+          );
+          await mutate(
+            (currentData) =>
+              currentData?.map((r) => (r.id === updated.id ? updated : r)),
+            false,
+          );
           enqueueSnackbar("Car updated", { variant: "success" });
           return updated;
         }
@@ -144,23 +131,18 @@ export const useCars = () => {
 
   const handleAddNew = useCallback(() => {
     const id = `new-${Date.now()}`;
-    const newRow = {
+    const newRow: Car = {
       id,
-      year: new Date().getFullYear(),
+      year: 0,
       make: "",
       model: "",
     };
 
-    // Add to local state
-    setRows((currentRows) => [newRow, ...currentRows]);
-
-    // Defer state update to avoid updating state during render
-    queueMicrotask(() => {
-      setRowModesModel((prev) => ({
-        ...prev,
-        [id]: { mode: GridRowModes.Edit, fieldToFocus: "year" },
-      }));
-    });
+    setRows((oldRows) => [newRow, ...oldRows]);
+    setRowModesModel((oldModel) => ({
+      ...oldModel,
+      [id]: { mode: GridRowModes.Edit, fieldToFocus: "year" },
+    }));
   }, []);
 
   return {

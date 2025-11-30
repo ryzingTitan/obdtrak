@@ -18,11 +18,10 @@ import { useSnackbar } from "notistack";
 export const useTracks = () => {
   const swrKey = `/tracks`;
   const { data, isLoading, mutate } = useSWR<Track[]>(swrKey, getAllTracks);
-  const [rows, setRows] = useState<Track[]>([]);
+  const [rows, setRows] = useState<readonly Track[]>([]);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const { enqueueSnackbar } = useSnackbar();
 
-  // Sync server data with local state, preserving temporary rows
   useEffect(() => {
     if (data) {
       setRows((currentRows) => {
@@ -37,104 +36,92 @@ export const useTracks = () => {
     }
   }, [data]);
 
-  const handleRowModesModelChange = useCallback(
-    (newModel: GridRowModesModel) => {
-      // Defer state update to avoid updating state during render
-      queueMicrotask(() => {
-        setRowModesModel(newModel);
-      });
-    },
-    [],
-  );
+  const handleRowModesModelChange = (newModel: GridRowModesModel) => {
+    setRowModesModel(newModel);
+  };
 
   const handleEditClick = useCallback(
     (id: GridRowId) => () => {
-      setRowModesModel((prev) => ({
-        ...prev,
-        [id]: { mode: GridRowModes.Edit },
-      }));
+      setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
     },
-    [],
+    [rowModesModel],
   );
 
   const handleSaveClick = useCallback(
     (id: GridRowId) => () => {
-      setRowModesModel((prev) => ({
-        ...prev,
-        [id]: { mode: GridRowModes.View },
-      }));
+      setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
     },
-    [],
+    [rowModesModel],
   );
 
   const handleCancelClick = useCallback(
     (id: GridRowId) => () => {
-      setRowModesModel((prev) => ({
-        ...prev,
+      setRowModesModel({
+        ...rowModesModel,
         [id]: { mode: GridRowModes.View, ignoreModifications: true },
-      }));
+      });
 
-      // If the row is a new row, remove it from local state
       if (String(id).startsWith("new-")) {
         setRows((currentRows) => currentRows.filter((row) => row.id !== id));
       }
     },
-    [],
+    [rowModesModel],
   );
 
   const handleDeleteClick = useCallback(
     (id: GridRowId) => async () => {
-      const toRemove = rows.find((r) => r.id === id);
-      if (!toRemove) return;
+      const originalRows = [...rows];
+      const newRows = rows.filter((row) => row.id !== id);
+      setRows(newRows);
 
-      // Optimistically remove from local state
-      setRows((currentRows) => currentRows.filter((r) => r.id !== id));
+      if (String(id).startsWith("new-")) {
+        return;
+      }
 
       try {
-        if (!String(toRemove.id).startsWith("new-")) {
-          await deleteTrack(swrKey, String(toRemove.id));
-          await mutate();
-          enqueueSnackbar("Track deleted", { variant: "success" });
-        }
+        await deleteTrack(swrKey, String(id));
+        await mutate(
+          newRows.filter((r) => !String(r.id).startsWith("new-")),
+          false,
+        );
+        enqueueSnackbar("Track deleted", { variant: "success" });
       } catch (e) {
         console.error(e);
+        setRows(originalRows);
         enqueueSnackbar("Failed to delete track", { variant: "error" });
-        // Restore the row on error
-        setRows((currentRows) => [toRemove, ...currentRows]);
       }
     },
     [rows, swrKey, mutate, enqueueSnackbar],
   );
 
   const processRowUpdate = useCallback(
-    async (
-      newRow: GridValidRowModel,
-      oldRow: GridValidRowModel,
-    ): Promise<GridValidRowModel> => {
+    async (newRow: GridValidRowModel): Promise<GridValidRowModel> => {
       const payload: Partial<Track> = {
         ...newRow,
       };
 
       try {
         if (String(newRow.id).startsWith("new-")) {
-          // Create on server
           const created = await createTrack(swrKey, payload);
-
-          // Remove temp row and let the server data be merged by useEffect
           setRows((currentRows) =>
-            currentRows.filter((r) => r.id !== newRow.id),
+            currentRows.map((row) => (row.id === newRow.id ? created : row)),
           );
-
-          // Trigger revalidation - useEffect will merge the new server data
-          await mutate();
+          await mutate(
+            (currentData) => [created, ...(currentData || [])],
+            false,
+          );
           enqueueSnackbar("Track created", { variant: "success" });
           return created;
         } else {
-          // Update on server
-          const updated = await updateTrack(swrKey, String(oldRow.id), payload);
-
-          // Trigger revalidation - useEffect will merge the updated server data
-          await mutate();
+          const updated = await updateTrack(swrKey, String(newRow.id), payload);
+          setRows((currentRows) =>
+            currentRows.map((row) => (row.id === updated.id ? updated : row)),
+          );
+          await mutate(
+            (currentData) =>
+              currentData?.map((r) => (r.id === updated.id ? updated : r)),
+            false,
+          );
           enqueueSnackbar("Track updated", { variant: "success" });
           return updated;
         }
@@ -149,23 +136,18 @@ export const useTracks = () => {
 
   const handleAddNew = useCallback(() => {
     const id = `new-${Date.now()}`;
-    const newRow = {
+    const newRow: Track = {
       id,
       name: "",
-      latitude: 0,
       longitude: 0,
+      latitude: 0,
     };
 
-    // Add to local state
-    setRows((currentRows) => [newRow, ...currentRows]);
-
-    // Defer state update to avoid updating state during render
-    queueMicrotask(() => {
-      setRowModesModel((prev) => ({
-        ...prev,
-        [id]: { mode: GridRowModes.Edit, fieldToFocus: "name" },
-      }));
-    });
+    setRows((oldRows) => [newRow, ...oldRows]);
+    setRowModesModel((oldModel) => ({
+      ...oldModel,
+      [id]: { mode: GridRowModes.Edit, fieldToFocus: "name" },
+    }));
   }, []);
 
   return {

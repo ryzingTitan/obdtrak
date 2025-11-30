@@ -68,6 +68,7 @@ export default function CarsDataGrid() {
         editable: true,
         flex: 1,
         type: "number",
+        valueFormatter: (value?: number) => value?.toString(),
       },
       {
         field: "make",
@@ -105,7 +106,6 @@ export default function CarsDataGrid() {
                 icon={<Cancel />}
                 label="Cancel"
                 onClick={handleCancelClick(id)}
-                color="inherit"
               />,
             ];
           }
@@ -115,14 +115,12 @@ export default function CarsDataGrid() {
               icon={<Edit />}
               label="Edit"
               onClick={handleEditClick(id)}
-              color="inherit"
             />,
             <GridActionsCellItem
               key="delete"
               icon={<Delete />}
               label="Delete"
               onClick={handleDeleteClick(id)}
-              color="inherit"
             />,
           ];
         },

@@ -67,7 +67,7 @@ describe("useCars", () => {
     expect(newRow?.id).toMatch(/^new-\d+$/);
     expect(newRow?.make).toBe("");
     expect(newRow?.model).toBe("");
-    expect(newRow?.year).toBeGreaterThan(0);
+    expect(newRow?.year).toBe(0);
   });
 
   it("should set row to edit mode when handleEditClick is called", async () => {
@@ -199,7 +199,7 @@ describe("useCars", () => {
     };
 
     await act(async () => {
-      await result.current.processRowUpdate(newRow, newRow);
+      await result.current.processRowUpdate(newRow);
     });
 
     expect(createCar).toHaveBeenCalledWith("/cars", newRow);
@@ -221,7 +221,7 @@ describe("useCars", () => {
     });
 
     await act(async () => {
-      await result.current.processRowUpdate(updatedCar, mockCars[0]);
+      await result.current.processRowUpdate(updatedCar);
     });
 
     expect(updateCar).toHaveBeenCalledWith("/cars", "1", updatedCar);
@@ -245,7 +245,7 @@ describe("useCars", () => {
 
     await expect(
       act(async () => {
-        await result.current.processRowUpdate(newRow, newRow);
+        await result.current.processRowUpdate(newRow);
       }),
     ).rejects.toThrow();
   });

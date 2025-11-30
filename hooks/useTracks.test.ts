@@ -209,7 +209,7 @@ describe("useTracks", () => {
     };
 
     await act(async () => {
-      await result.current.processRowUpdate(newRow, newRow);
+      await result.current.processRowUpdate(newRow);
     });
 
     expect(createTrack).toHaveBeenCalledWith("/tracks", newRow);
@@ -231,7 +231,7 @@ describe("useTracks", () => {
     });
 
     await act(async () => {
-      await result.current.processRowUpdate(updatedTrack, mockTracks[0]);
+      await result.current.processRowUpdate(updatedTrack);
     });
 
     expect(updateTrack).toHaveBeenCalledWith("/tracks", "1", updatedTrack);
@@ -257,7 +257,7 @@ describe("useTracks", () => {
 
     await expect(
       act(async () => {
-        await result.current.processRowUpdate(newRow, newRow);
+        await result.current.processRowUpdate(newRow);
       }),
     ).rejects.toThrow();
   });

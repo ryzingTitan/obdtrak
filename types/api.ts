@@ -11,3 +11,15 @@ export interface Car {
   make: string;
   model: string;
 }
+
+export interface Session {
+  id: string;
+  startTime: string;
+  endTime: string;
+  trackName: string;
+  trackLatitude: number;
+  trackLongitude: number;
+  carYear: number;
+  carMake: string;
+  carModel: string;
+}

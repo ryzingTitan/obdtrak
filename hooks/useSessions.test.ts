@@ -50,7 +50,9 @@ describe("useSessions", () => {
       expect(result.current.sessions).toEqual(mockSessions);
     });
 
-    expect(getAllSessions).toHaveBeenCalledWith("/sessions");
+    expect(getAllSessions).toHaveBeenCalledWith(
+      "/sessions?userEmail=undefined",
+    );
   });
 
   it("should set isLoading to true while fetching", () => {

@@ -23,3 +23,9 @@ export interface Session {
   carMake: string;
   carModel: string;
 }
+
+export interface SessionData {
+  carId: string;
+  trackId: string;
+  uploadFiles?: File[];
+}

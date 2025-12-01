@@ -110,4 +110,89 @@ describe("fetchWithAuth", () => {
       "Request failed with status 500",
     );
   });
+
+  it("should send FormData without Content-Type header", async () => {
+    let receivedContentType: string | null = null;
+
+    server.use(
+      http.post("http://localhost:3001/api/test", ({ request }) => {
+        receivedContentType = request.headers.get("content-type");
+        return HttpResponse.json({ success: true });
+      }),
+    );
+
+    const formData = new FormData();
+    formData.append("file", new File(["content"], "test.txt"));
+    formData.append("name", "test");
+
+    await fetchWithAuth("/test", {
+      method: "POST",
+      body: formData,
+    });
+
+    expect(receivedContentType).toContain("multipart/form-data");
+  });
+
+  it("should send JSON with Content-Type header", async () => {
+    let receivedContentType: string | null = null;
+
+    server.use(
+      http.post("http://localhost:3001/api/test", ({ request }) => {
+        receivedContentType = request.headers.get("content-type");
+        return HttpResponse.json({ success: true });
+      }),
+    );
+
+    await fetchWithAuth("/test", {
+      method: "POST",
+      body: { message: "hello" },
+    });
+
+    expect(receivedContentType).toBe("application/json");
+  });
+
+  it("should handle empty response with content-length 0", async () => {
+    server.use(
+      http.post("http://localhost:3001/api/test", () => {
+        return new HttpResponse(null, {
+          status: 200,
+          headers: {
+            "content-length": "0",
+          },
+        });
+      }),
+    );
+
+    const result = await fetchWithAuth("/test", { method: "POST" });
+    expect(result).toBeUndefined();
+  });
+
+  it("should handle empty response without content-type", async () => {
+    server.use(
+      http.post("http://localhost:3001/api/test", () => {
+        return new HttpResponse("", {
+          status: 200,
+        });
+      }),
+    );
+
+    const result = await fetchWithAuth("/test", { method: "POST" });
+    expect(result).toBeUndefined();
+  });
+
+  it("should handle response with non-JSON content-type", async () => {
+    server.use(
+      http.post("http://localhost:3001/api/test", () => {
+        return new HttpResponse("plain text", {
+          status: 200,
+          headers: {
+            "content-type": "text/plain",
+          },
+        });
+      }),
+    );
+
+    const result = await fetchWithAuth("/test", { method: "POST" });
+    expect(result).toBeUndefined();
+  });
 });

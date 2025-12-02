@@ -10,6 +10,13 @@ export default function SessionsDataGrid() {
   const columns: GridColDef[] = useMemo(
     () => [
       {
+        field: "id",
+        headerName: "Session ID",
+        headerAlign: "center",
+        align: "center",
+        flex: 1,
+      },
+      {
         field: "startTime",
         headerName: "Start Time",
         headerAlign: "center",
@@ -60,7 +67,7 @@ export default function SessionsDataGrid() {
       rows={sessions}
       columns={columns}
       loading={isLoading}
-      sx={{ m: 2 }}
+      sx={{ mt: 2, mb: 8, mr: 2, ml: 2 }}
     />
   );
 }

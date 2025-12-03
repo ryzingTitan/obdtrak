@@ -42,3 +42,35 @@ export async function createSessions(
     throw new Error("Failed to create sessions");
   }
 }
+
+export async function updateSession(
+  url: string,
+  sessionData: SessionData,
+): Promise<void> {
+  const session = await auth0.getSession();
+
+  console.log(sessionData);
+
+  const formData = new FormData();
+  formData.append("carId", sessionData.carId);
+  formData.append("trackId", sessionData.trackId);
+  formData.append("userEmail", session?.user.email ?? "");
+  formData.append("userFirstName", session?.user?.name?.split(" ")[0] ?? "");
+  formData.append("userLastName", session?.user?.name?.split(" ")[1] ?? "");
+
+  if (sessionData.uploadFiles && sessionData.uploadFiles.length > 0) {
+    sessionData.uploadFiles.forEach((file) => {
+      formData.append("uploadFile", file);
+    });
+  }
+
+  try {
+    return await fetchWithAuth<void>(url, {
+      method: "PUT",
+      body: formData,
+    });
+  } catch (error) {
+    console.error("Failed to update session:", error);
+    throw new Error("Failed to update session");
+  }
+}

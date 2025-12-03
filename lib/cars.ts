@@ -2,12 +2,16 @@
 
 import { Car } from "@/types/api";
 import { fetchWithAuth } from "./api";
+import { ApiError } from "./api-error";
 
 export async function getAllCars(url: string): Promise<Car[]> {
   try {
     return await fetchWithAuth<Car[]>(url);
   } catch (error) {
     console.error("Failed to fetch cars:", error);
+    if (error instanceof ApiError) {
+      throw error;
+    }
     throw new Error("Failed to fetch cars");
   }
 }
@@ -20,6 +24,9 @@ export async function createCar(url: string, car: Partial<Car>): Promise<Car> {
     });
   } catch (error) {
     console.error("Failed to create car:", error);
+    if (error instanceof ApiError) {
+      throw error;
+    }
     throw new Error("Failed to create car");
   }
 }
@@ -36,6 +43,9 @@ export async function updateCar(
     });
   } catch (error) {
     console.error("Failed to update car:", error);
+    if (error instanceof ApiError) {
+      throw error;
+    }
     throw new Error("Failed to update car");
   }
 }
@@ -45,6 +55,9 @@ export async function deleteCar(url: string, id: string): Promise<void> {
     await fetchWithAuth<void>(`${url}/${id}`, { method: "DELETE" });
   } catch (error) {
     console.error("Failed to delete car:", error);
+    if (error instanceof ApiError) {
+      throw error;
+    }
     throw new Error("Failed to delete car");
   }
 }

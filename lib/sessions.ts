@@ -3,12 +3,16 @@
 import { Session, SessionData } from "@/types/api";
 import { fetchWithAuth } from "./api";
 import { auth0 } from "@/lib/auth0";
+import { ApiError } from "./api-error";
 
 export async function getAllSessions(url: string): Promise<Session[]> {
   try {
     return await fetchWithAuth<Session[]>(url);
   } catch (error) {
     console.error("Failed to fetch sessions:", error);
+    if (error instanceof ApiError) {
+      throw error;
+    }
     throw new Error("Failed to fetch sessions");
   }
 }
@@ -39,6 +43,9 @@ export async function createSessions(
     });
   } catch (error) {
     console.error("Failed to create sessions:", error);
+    if (error instanceof ApiError) {
+      throw error;
+    }
     throw new Error("Failed to create sessions");
   }
 }
@@ -69,6 +76,9 @@ export async function updateSession(
     });
   } catch (error) {
     console.error("Failed to update session:", error);
+    if (error instanceof ApiError) {
+      throw error;
+    }
     throw new Error("Failed to update session");
   }
 }

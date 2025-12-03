@@ -66,9 +66,7 @@ describe("useRecords", () => {
       expect(result.current.records).toEqual(mockRecords);
     });
 
-    expect(getRecordsBySessionId).toHaveBeenCalledWith(
-      "/api/sessions/1/records",
-    );
+    expect(getRecordsBySessionId).toHaveBeenCalledWith("/sessions/1/records");
   });
 
   it("should not fetch records when sessionId is null", () => {

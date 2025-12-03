@@ -1,6 +1,6 @@
 "use client";
 
-import { Autocomplete, TextField, Box } from "@mui/material";
+import { Autocomplete, TextField, Box, Tabs, Tab } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useSessions } from "@/hooks/useSessions";
 import { useRecords } from "@/hooks/useRecords";
@@ -11,6 +11,7 @@ import { useMemo, useState } from "react";
 export default function Analytics() {
   const { sessions, isLoading: sessionsLoading } = useSessions();
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
+  const [currentTab, setCurrentTab] = useState(0);
   const { records, isLoading: recordsLoading } = useRecords(
     selectedSession?.id || null,
   );
@@ -137,15 +138,27 @@ export default function Analytics() {
         />
       </Box>
       {selectedSession && (
-        <DataGrid
-          rows={records}
-          columns={columns}
-          loading={recordsLoading}
-          getRowId={(row) =>
-            `${row.sessionId}-${row.timestamp}-${row.latitude}-${row.longitude}`
-          }
-          sx={{ mt: 2, mb: 8, mr: 2, ml: 2 }}
-        />
+        <>
+          <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+            <Tabs
+              value={currentTab}
+              onChange={(_event, newValue) => setCurrentTab(newValue)}
+            >
+              <Tab label="Summary" />
+            </Tabs>
+          </Box>
+          {currentTab === 0 && (
+            <DataGrid
+              rows={records}
+              columns={columns}
+              loading={recordsLoading}
+              getRowId={(row) =>
+                `${row.sessionId}-${row.timestamp}-${row.latitude}-${row.longitude}`
+              }
+              sx={{ mt: 2, mb: 8, mr: 2, ml: 2 }}
+            />
+          )}
+        </>
       )}
     </Box>
   );

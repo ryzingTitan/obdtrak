@@ -18,10 +18,11 @@ describe("Footer", () => {
     vi.clearAllMocks();
   });
 
-  it("should render navigation with Tracks, Cars, and Sessions", () => {
+  it("should render navigation with Analytics, Tracks, Cars, and Sessions", () => {
     mockPathname.mockReturnValue("/tracks");
     render(<Footer />);
 
+    expect(screen.getByText("Analytics")).toBeInTheDocument();
     expect(screen.getByText("Tracks")).toBeInTheDocument();
     expect(screen.getByText("Cars")).toBeInTheDocument();
     expect(screen.getByText("Sessions")).toBeInTheDocument();
@@ -82,6 +83,27 @@ describe("Footer", () => {
     await user.click(sessionsButton);
 
     expect(mockPush).toHaveBeenCalledWith("/sessions");
+  });
+
+  it("should initialize with correct value for /analytics route", () => {
+    mockPathname.mockReturnValue("/analytics");
+    render(<Footer />);
+
+    const analyticsButton = screen
+      .getAllByText("Analytics")[0]
+      .closest("button");
+    expect(analyticsButton).toBeInTheDocument();
+  });
+
+  it("should navigate to /analytics when Analytics is clicked", async () => {
+    mockPathname.mockReturnValue("/tracks");
+    const user = userEvent.setup();
+    render(<Footer />);
+
+    const analyticsButton = screen.getAllByText("Analytics")[0];
+    await user.click(analyticsButton);
+
+    expect(mockPush).toHaveBeenCalledWith("/analytics");
   });
 
   it("should render when pathname is not recognized", () => {

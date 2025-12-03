@@ -5,14 +5,16 @@ import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import EditRoad from "@mui/icons-material/EditRoad";
 import DirectionsCar from "@mui/icons-material/DirectionsCar";
 import UploadFile from "@mui/icons-material/UploadFile";
+import Analytics from "@mui/icons-material/Analytics";
 import { useEffect, useState } from "react";
 import Paper from "@mui/material/Paper";
 import { usePathname, useRouter } from "next/navigation";
 
 const ROUTE_TO_INDEX: Record<string, number> = {
-  "/tracks": 0,
-  "/cars": 1,
-  "/sessions": 2,
+  "/analytics": 0,
+  "/tracks": 1,
+  "/cars": 2,
+  "/sessions": 3,
 };
 
 export default function Footer() {
@@ -33,12 +35,15 @@ export default function Footer() {
 
     switch (newValue) {
       case 0:
-        router.push("/tracks");
+        router.push("/analytics");
         break;
       case 1:
-        router.push("/cars");
+        router.push("/tracks");
         break;
       case 2:
+        router.push("/cars");
+        break;
+      case 3:
         router.push("/sessions");
         break;
     }
@@ -50,6 +55,7 @@ export default function Footer() {
       elevation={3}
     >
       <BottomNavigation showLabels value={value} onChange={handleChange}>
+        <BottomNavigationAction label="Analytics" icon={<Analytics />} />
         <BottomNavigationAction label="Tracks" icon={<EditRoad />} />
         <BottomNavigationAction label="Cars" icon={<DirectionsCar />} />
         <BottomNavigationAction label="Sessions" icon={<UploadFile />} />

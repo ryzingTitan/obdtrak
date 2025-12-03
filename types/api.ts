@@ -29,3 +29,21 @@ export interface SessionData {
   trackId: string;
   uploadFiles?: File[];
 }
+
+export interface Record {
+  sessionId: number;
+  timestamp: string;
+  longitude: number;
+  latitude: number;
+  altitude: number;
+  intakeAirTemperature: number;
+  boostPressure: number;
+  coolantTemperature: number;
+  engineRpm: number;
+  speed: number;
+  throttlePosition: number;
+  airFuelRatio: number;
+  oilPressure: number;
+  manifoldPressure: number;
+  massAirFlow: number;
+}

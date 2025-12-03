@@ -49,8 +49,6 @@ export async function updateSession(
 ): Promise<void> {
   const session = await auth0.getSession();
 
-  console.log(sessionData);
-
   const formData = new FormData();
   formData.append("carId", sessionData.carId);
   formData.append("trackId", sessionData.trackId);

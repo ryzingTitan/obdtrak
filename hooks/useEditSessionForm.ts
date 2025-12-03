@@ -41,8 +41,6 @@ export const useEditSessionForm = (
     enableReinitialize: true,
     validationSchema: sessionValidationSchema,
     onSubmit: async (values, { setSubmitting, resetForm }) => {
-      console.log(values);
-
       try {
         const sessionData: SessionData = {
           carId: values.carId,

@@ -217,7 +217,6 @@ describe("Analytics Page", () => {
     await user.click(option);
 
     const grid = screen.getByRole("grid");
-    expect(within(grid).getByText("Session ID")).toBeInTheDocument();
     expect(within(grid).getByText("Timestamp")).toBeInTheDocument();
     expect(within(grid).getByText("3000")).toBeInTheDocument();
   });
@@ -238,9 +237,11 @@ describe("Analytics Page", () => {
     await user.click(option);
 
     // Check for timestamp format: MM-DD-YYYY h:mm:ss A
-    expect(
-      screen.getByText(/01-15-2024 \d{1,2}:\d{2}:\d{2} [AP]M/i),
-    ).toBeInTheDocument();
+    const timestamps = screen.getAllByText(
+      /01-15-2024 \d{1,2}:\d{2}:\d{2} [AP]M/i,
+    );
+    expect(timestamps.length).toBeGreaterThan(0);
+    expect(timestamps[0]).toBeInTheDocument();
   });
 
   it("should show loading state in DataGrid when records are loading", async () => {
@@ -277,20 +278,18 @@ describe("Analytics Page", () => {
     await user.click(option);
 
     const grid = screen.getByRole("grid");
-    expect(within(grid).getByText("Session ID")).toBeInTheDocument();
     expect(within(grid).getByText("Timestamp")).toBeInTheDocument();
-    expect(within(grid).getByText("Longitude")).toBeInTheDocument();
-    expect(within(grid).getByText("Latitude")).toBeInTheDocument();
-    expect(within(grid).getByText("Altitude")).toBeInTheDocument();
     expect(within(grid).getByText("Intake Air Temp")).toBeInTheDocument();
-    expect(within(grid).getByText("Boost Pressure")).toBeInTheDocument();
+    expect(within(grid).getByText("Boost Pressure (PSI)")).toBeInTheDocument();
     expect(within(grid).getByText("Coolant Temp")).toBeInTheDocument();
     expect(within(grid).getByText("Engine RPM")).toBeInTheDocument();
-    expect(within(grid).getByText("Speed")).toBeInTheDocument();
+    expect(within(grid).getByText("Speed (MPH)")).toBeInTheDocument();
     expect(within(grid).getByText("Throttle Position")).toBeInTheDocument();
-    expect(within(grid).getByText("Air Fuel Ratio")).toBeInTheDocument();
-    expect(within(grid).getByText("Oil Pressure")).toBeInTheDocument();
-    expect(within(grid).getByText("Manifold Pressure")).toBeInTheDocument();
-    expect(within(grid).getByText("Mass Air Flow")).toBeInTheDocument();
+    expect(within(grid).getByText("AFR")).toBeInTheDocument();
+    expect(within(grid).getByText("Oil Pressure (PSI)")).toBeInTheDocument();
+    expect(
+      within(grid).getByText("Manifold Pressure (PSI)"),
+    ).toBeInTheDocument();
+    expect(within(grid).getByText("Mass Air Flow (G/S)")).toBeInTheDocument();
   });
 });

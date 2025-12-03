@@ -8,6 +8,11 @@ export default defineConfig({
     environment: "jsdom",
     css: true,
     setupFiles: ["./vitest.setup.ts"],
+    server: {
+      deps: {
+        inline: ["@mui/x-charts", "@mui/x-data-grid"],
+      },
+    },
     coverage: {
       provider: "v8",
       reporter: ["text", "html", "json"],

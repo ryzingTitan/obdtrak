@@ -2,6 +2,7 @@
 
 import { Autocomplete, TextField, Box, Tabs, Tab } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { LineChart } from "@mui/x-charts/LineChart";
 import { useSessions } from "@/hooks/useSessions";
 import { useRecords } from "@/hooks/useRecords";
 import { Session } from "@/types/api";
@@ -145,6 +146,7 @@ export default function Analytics() {
               onChange={(_event, newValue) => setCurrentTab(newValue)}
             >
               <Tab label="Summary" />
+              <Tab label="Temperature" />
             </Tabs>
           </Box>
           {currentTab === 0 && (
@@ -157,6 +159,36 @@ export default function Analytics() {
               }
               sx={{ mt: 2, mb: 8, mr: 2, ml: 2 }}
             />
+          )}
+          {currentTab === 1 && (
+            <Box sx={{ mt: 2, mb: 8, mr: 2, ml: 2, height: 400 }}>
+              <LineChart
+                xAxis={[
+                  {
+                    data: records.map((record) =>
+                      new Date(record.timestamp).getTime(),
+                    ),
+                    scaleType: "time",
+                    valueFormatter: (value) => dayjs(value).format("h:mm:ss A"),
+                  },
+                ]}
+                series={[
+                  {
+                    data: records.map((record) => record.intakeAirTemperature),
+                    label: "Intake Air Temperature (°F)",
+                    showMark: false,
+                  },
+                  {
+                    data: records.map((record) => record.coolantTemperature),
+                    label: "Coolant Temperature (°F)",
+                    showMark: false,
+                  },
+                ]}
+                height={400}
+                margin={{ left: 70, right: 20, top: 50, bottom: 70 }}
+                grid={{ vertical: true, horizontal: true }}
+              />
+            </Box>
           )}
         </>
       )}

@@ -1,4 +1,4 @@
-import CarsDataGrid from "@/components/CarsDataGrid";
+import CarsDataGrid from "./_components/CarsDataGrid";
 
 export default function Cars() {
   return <CarsDataGrid />;

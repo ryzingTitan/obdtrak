@@ -42,7 +42,13 @@ export default function TrackPreviewModal({
   }
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      data-testid="track-preview-modal"
+    >
       <DialogTitle>Preview Track: {track.name}</DialogTitle>
       <DialogContent>
         <div style={{ height: "400px", width: "100%" }}>

@@ -92,7 +92,7 @@ Analytics Page (app/analytics/page.tsx)
 - Uses `mutate()` for local cache updates without server revalidation
 - Conditional fetching supported (e.g., `useRecords(sessionId)` only fetches when sessionId is provided)
 
-**MUI DataGrid Pattern** (see `components/TracksDataGrid.tsx`, `components/CarsDataGrid.tsx`, `components/SessionsDataGrid.tsx`):
+**MUI DataGrid Pattern** (see `app/tracks/_components/TracksDataGrid.tsx`, `app/cars/_components/CarsDataGrid.tsx`, `app/sessions/_components/SessionsDataGrid.tsx`):
 
 - Inline row editing with edit/view mode toggling
 - New rows use temporary IDs (`new-${Date.now()}`) until persisted
@@ -124,27 +124,32 @@ app/                    # Next.js App Router pages
   page.tsx             # Home page (redirects to /analytics)
   analytics/
     page.tsx           # Analytics dashboard with charts (client component)
-    _components/       # Analytics-specific components
+    _components/       # Analytics-specific components (charts, tabs, selectors)
   telemetry/
     page.tsx           # Telemetry page (client component)
   tracks/
     page.tsx           # Tracks management page
-    _components/       # Tracks-specific components (TracksDataGrid)
+    _components/       # Tracks-specific components
+      TracksDataGrid.tsx    # Inline editing DataGrid for tracks
+      TrackPreviewModal.tsx # Modal for previewing track details
   cars/
     page.tsx           # Car management page
+    _components/       # Cars-specific components
+      CarsDataGrid.tsx      # Inline editing DataGrid for cars
   sessions/
     page.tsx           # Session management page
+    _components/       # Sessions-specific components
+      SessionsDataGrid.tsx   # Inline editing DataGrid for sessions
+      AddSessionModal.tsx    # Modal for creating new sessions
+      EditSessionModal.tsx   # Modal for editing existing sessions
 
-components/            # Shared React components
+components/            # Shared React components (used across multiple routes)
   Header/
     Header.tsx         # App header with logo and user menu
   Footer/
     Footer.tsx         # Bottom navigation bar (5 tabs)
-  AddSessionModal.tsx
-  EditSessionModal.tsx
-  CarsDataGrid.tsx
-  SessionsDataGrid.tsx
-  TrackPreviewModal.tsx
+  Providers/
+    Providers.tsx      # SWR and Notistack providers wrapper
 
 hooks/                 # Custom React hooks
   useTracks.ts         # SWR-based hook for track CRUD operations

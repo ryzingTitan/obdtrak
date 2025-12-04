@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import Sessions from "./page";
 import React from "react";
 
-vi.mock("@/components/SessionsDataGrid", () => ({
+vi.mock("./_components/SessionsDataGrid", () => ({
   default: () =>
     React.createElement("div", { "data-testid": "sessions-data-grid" }),
 }));

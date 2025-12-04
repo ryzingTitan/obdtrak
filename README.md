@@ -111,31 +111,75 @@ docker run -p 3000:3000 obdtrak
 
 ```
 obdtrak/
-├── app/                    # Next.js App Router pages
-│   ├── layout.tsx         # Root layout with MUI theme, SWR config
-│   ├── page.tsx           # Home page
-│   ├── analytics/         # Analytics dashboard pages
-│   ├── telemetry/         # Telemetry pages
-│   ├── tracks/            # Track management pages
-│   ├── cars/              # Car management pages
-│   └── sessions/          # Session management pages
-├── components/            # Shared React components
-│   ├── Header.tsx
-│   └── Footer.tsx
-├── hooks/                 # Custom React hooks
-│   ├── useTracks.ts
-│   └── useSessions.ts
-├── lib/                   # Server-side utilities and actions
-│   ├── api.ts            # Generic fetchWithAuth for API calls
-│   ├── api-error.ts      # Custom error class
-│   ├── auth0.ts          # Auth0 client and session helpers
-│   ├── tracks.ts         # Server actions for track CRUD
-│   └── sessions.ts       # Server actions for session CRUD
-├── types/                 # TypeScript type definitions
-│   └── api.ts            # API response types
-├── middleware.ts          # Auth0 middleware for route protection
-└── theme.ts               # MUI theme configuration
+├── app/                           # Next.js App Router pages
+│   ├── layout.tsx                # Root layout with MUI theme, SWR config
+│   ├── page.tsx                  # Home page (redirects to /analytics)
+│   ├── analytics/                # Analytics dashboard
+│   │   ├── page.tsx             # Analytics page
+│   │   └── _components/         # Analytics-specific components
+│   │       ├── AnalyticsTabs.tsx
+│   │       ├── SessionSelector.tsx
+│   │       ├── SummaryTab.tsx
+│   │       ├── BoostChart.tsx
+│   │       ├── OilPressureChart.tsx
+│   │       ├── SpeedChart.tsx
+│   │       ├── TemperatureChart.tsx
+│   │       └── ThrottleChart.tsx
+│   ├── telemetry/                # Telemetry visualization
+│   │   └── page.tsx
+│   ├── tracks/                   # Track management
+│   │   ├── page.tsx
+│   │   └── _components/
+│   │       ├── TracksDataGrid.tsx
+│   │       └── TrackPreviewModal.tsx
+│   ├── cars/                     # Car management
+│   │   ├── page.tsx
+│   │   └── _components/
+│   │       └── CarsDataGrid.tsx
+│   └── sessions/                 # Session management
+│       ├── page.tsx
+│       └── _components/
+│           ├── SessionsDataGrid.tsx
+│           ├── AddSessionModal.tsx
+│           └── EditSessionModal.tsx
+├── components/                    # Shared components (used across routes)
+│   ├── Header/
+│   │   └── Header.tsx            # App header with user menu
+│   ├── Footer/
+│   │   └── Footer.tsx            # Bottom navigation bar
+│   └── Providers/
+│       └── Providers.tsx         # SWR and Notistack providers
+├── hooks/                         # Custom React hooks
+│   ├── useTracks.ts              # SWR-based hook for track CRUD
+│   ├── useSessions.ts            # SWR-based hook for session CRUD
+│   ├── useCars.ts                # SWR-based hook for car CRUD
+│   ├── useRecords.ts             # SWR-based hook for telemetry records
+│   ├── useAddSessionForm.ts      # Form state for adding sessions
+│   └── useEditSessionForm.ts     # Form state for editing sessions
+├── lib/                           # Server-side utilities and actions
+│   ├── api.ts                    # Generic fetchWithAuth for API calls
+│   ├── api-error.ts              # Custom error class for API errors
+│   ├── auth0.ts                  # Auth0 client and session helpers
+│   ├── tracks.ts                 # Server actions for track CRUD
+│   ├── sessions.ts               # Server actions for session CRUD
+│   ├── cars.ts                   # Server actions for car CRUD
+│   └── records.ts                # Server actions for telemetry records
+├── types/                         # TypeScript type definitions
+│   ├── api.ts                    # API response types (Track, Session, Car, Record)
+│   └── validations.ts            # Validation schemas
+├── middleware.ts                  # Auth0 middleware for route protection
+└── theme.ts                       # MUI theme configuration
 ```
+
+### File Organization
+
+This project follows Next.js 15 App Router best practices:
+
+- **Route-specific components** are colocated in `_components/` folders within each route (underscore prefix makes them non-routable)
+- **Shared components** used across multiple routes live in the top-level `components/` directory
+- **Custom hooks** are centralized in the `hooks/` directory for reusability
+- **Server actions** are organized by resource type in the `lib/` directory
+- **No `/src` directory** - all application code lives at the root level following Next.js conventions
 
 ## Architecture
 

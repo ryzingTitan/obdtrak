@@ -22,12 +22,9 @@ import { useTracks } from "@/hooks/useTracks";
 import Tooltip from "@mui/material/Tooltip";
 import Track from "@/types/api";
 
-const TrackPreviewModal = dynamic(
-  () => import("@/components/TrackPreviewModal"),
-  {
-    ssr: false,
-  },
-);
+const TrackPreviewModal = dynamic(() => import("./TrackPreviewModal"), {
+  ssr: false,
+});
 
 interface EditToolbarProps {
   onAddNew: () => void;

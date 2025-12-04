@@ -1,5 +1,5 @@
-import SessionsDataGrid from "@/components/SessionsDataGrid";
-import AddSessionModal from "@/components/AddSessionModal";
+import SessionsDataGrid from "./_components/SessionsDataGrid";
+import AddSessionModal from "./_components/AddSessionModal";
 
 export default function Sessions() {
   return (

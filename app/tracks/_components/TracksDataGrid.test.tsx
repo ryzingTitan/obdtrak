@@ -14,7 +14,7 @@ import React from "react";
 
 vi.mock("@/hooks/useTracks");
 
-vi.mock("@/components/TrackPreviewModal", () => ({
+vi.mock("./TrackPreviewModal", () => ({
   default: ({
     track,
     open,

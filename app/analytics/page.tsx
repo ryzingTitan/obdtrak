@@ -12,6 +12,7 @@ import TemperatureChart from "./_components/TemperatureChart";
 import BoostChart from "./_components/BoostChart";
 import ThrottleChart from "./_components/ThrottleChart";
 import SpeedChart from "./_components/SpeedChart";
+import OilPressureChart from "./_components/OilPressureChart";
 
 export default function Analytics() {
   const { sessions, isLoading: sessionsLoading } = useSessions();
@@ -45,6 +46,7 @@ export default function Analytics() {
           {currentTab === 2 && <BoostChart records={records} />}
           {currentTab === 3 && <ThrottleChart records={records} />}
           {currentTab === 4 && <SpeedChart records={records} />}
+          {currentTab === 5 && <OilPressureChart records={records} />}
         </>
       )}
     </Box>

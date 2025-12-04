@@ -22,6 +22,7 @@ export default function AnalyticsTabs({
         <Tab label="Boost" />
         <Tab label="Throttle" />
         <Tab label="Speed" />
+        <Tab label="Oil Pressure" />
       </Tabs>
     </Box>
   );

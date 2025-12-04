@@ -68,7 +68,7 @@ describe("EditSessionModal", () => {
       formik: mockFormik as never,
     });
 
-    vi.mocked(useSWR).mockImplementation((key: string) => {
+    vi.mocked(useSWR).mockImplementation((key) => {
       if (key === "/cars") {
         return {
           data: mockCars,

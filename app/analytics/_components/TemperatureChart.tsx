@@ -77,12 +77,12 @@ export default function TemperatureChart({ records }: TemperatureChartProps) {
         ]}
         series={[
           {
-            data: records.map((record) => record.intakeAirTemperature),
+            data: records.map((record) => record.intakeAirTemperature ?? null),
             label: "Intake Air Temperature (°F)",
             showMark: false,
           },
           {
-            data: records.map((record) => record.coolantTemperature),
+            data: records.map((record) => record.coolantTemperature ?? null),
             label: "Coolant Temperature (°F)",
             showMark: false,
           },

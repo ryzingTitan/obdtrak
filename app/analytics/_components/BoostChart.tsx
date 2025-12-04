@@ -77,12 +77,12 @@ export default function BoostChart({ records }: BoostChartProps) {
         ]}
         series={[
           {
-            data: records.map((record) => record.boostPressure),
+            data: records.map((record) => record.boostPressure ?? null),
             label: "Boost Pressure (PSI)",
             showMark: false,
           },
           {
-            data: records.map((record) => record.manifoldPressure),
+            data: records.map((record) => record.manifoldPressure ?? null),
             label: "Manifold Pressure (PSI)",
             showMark: false,
           },

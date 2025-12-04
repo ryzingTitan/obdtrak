@@ -10,7 +10,7 @@ vi.mock("@/lib/records");
 
 const mockRecords: Record[] = [
   {
-    sessionId: 1,
+    sessionId: "1",
     timestamp: "2024-01-15T10:00:00Z",
     longitude: -121.7536,
     latitude: 36.5811,
@@ -27,7 +27,7 @@ const mockRecords: Record[] = [
     massAirFlow: 10,
   },
   {
-    sessionId: 1,
+    sessionId: "1",
     timestamp: "2024-01-15T10:00:01Z",
     longitude: -121.7537,
     latitude: 36.5812,

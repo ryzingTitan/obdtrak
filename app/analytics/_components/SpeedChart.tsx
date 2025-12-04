@@ -64,7 +64,7 @@ export default function SpeedChart({ records }: SpeedChartProps) {
         ]}
         series={[
           {
-            data: records.map((record) => record.speed),
+            data: records.map((record) => record.speed ?? null),
             label: "Speed (MPH)",
             showMark: false,
           },

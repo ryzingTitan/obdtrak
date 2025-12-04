@@ -7,8 +7,11 @@ describe("ThrottleChart", () => {
   const mockRecords: Record[] = [
     {
       id: "1",
-      sessionId: "session1",
+      sessionId: "1",
       timestamp: "2024-01-01T12:00:00Z",
+      longitude: -122.4194,
+      latitude: 37.7749,
+      altitude: 100,
       speed: 60,
       engineRpm: 3000,
       throttlePosition: 50,
@@ -17,11 +20,16 @@ describe("ThrottleChart", () => {
       coolantTemperature: 180,
       intakeAirTemperature: 100,
       oilPressure: 40,
+      airFuelRatio: 14.7,
+      massAirFlow: 25,
     },
     {
       id: "2",
-      sessionId: "session1",
+      sessionId: "1",
       timestamp: "2024-01-01T12:00:01Z",
+      longitude: -122.4195,
+      latitude: 37.775,
+      altitude: 101,
       speed: 65,
       engineRpm: 3500,
       throttlePosition: 60,
@@ -30,11 +38,16 @@ describe("ThrottleChart", () => {
       coolantTemperature: 185,
       intakeAirTemperature: 105,
       oilPressure: 45,
+      airFuelRatio: 14.5,
+      massAirFlow: 30,
     },
     {
       id: "3",
-      sessionId: "session1",
+      sessionId: "1",
       timestamp: "2024-01-01T12:00:02Z",
+      longitude: -122.4196,
+      latitude: 37.7751,
+      altitude: 102,
       speed: 70,
       engineRpm: 4000,
       throttlePosition: 70,
@@ -43,6 +56,8 @@ describe("ThrottleChart", () => {
       coolantTemperature: 190,
       intakeAirTemperature: 110,
       oilPressure: 50,
+      airFuelRatio: 14.3,
+      massAirFlow: 35,
     },
   ];
 
@@ -89,8 +104,8 @@ describe("ThrottleChart", () => {
     ];
     render(<ThrottleChart records={recordsWithNull} />);
     expect(
-      screen.getByText("Throttle Position Distribution"),
-    ).toBeInTheDocument();
+      screen.getAllByText("Throttle Position Distribution").length,
+    ).toBeGreaterThan(0);
   });
 
   it("should handle records with undefined throttle position", () => {
@@ -103,8 +118,8 @@ describe("ThrottleChart", () => {
     ];
     render(<ThrottleChart records={recordsWithUndefined} />);
     expect(
-      screen.getByText("Throttle Position Distribution"),
-    ).toBeInTheDocument();
+      screen.getAllByText("Throttle Position Distribution").length,
+    ).toBeGreaterThan(0);
   });
 
   it("should handle mixed valid and invalid throttle values", () => {
@@ -145,8 +160,8 @@ describe("ThrottleChart", () => {
       0,
     );
     expect(
-      screen.getByText("Throttle Position Distribution"),
-    ).toBeInTheDocument();
+      screen.getAllByText("Throttle Position Distribution").length,
+    ).toBeGreaterThan(0);
     expect(
       screen.getAllByText("Engine RPM Distribution").length,
     ).toBeGreaterThan(0);

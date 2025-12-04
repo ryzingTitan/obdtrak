@@ -78,8 +78,10 @@ export default function EditSessionModal({
               label="Session ID"
               value={session.id}
               disabled
-              InputProps={{
-                readOnly: true,
+              slotProps={{
+                input: {
+                  readOnly: true,
+                },
               }}
             />
             <FormControl fullWidth>

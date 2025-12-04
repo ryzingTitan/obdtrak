@@ -56,7 +56,11 @@ vi.mock("@mui/x-data-grid", () => ({
               { key: row.id },
               ...columns.map((col) => {
                 // Handle actions column
-                if (col.type === "actions" && col.getActions) {
+                if (
+                  col.type === "actions" &&
+                  "getActions" in col &&
+                  col.getActions
+                ) {
                   const actions = col.getActions({ row } as never);
                   return React.createElement(
                     "td",
@@ -69,7 +73,7 @@ vi.mock("@mui/x-data-grid", () => ({
 
                 if (col.valueGetter && typeof col.valueGetter === "function") {
                   value = col.valueGetter(
-                    value,
+                    value as never,
                     row as never,
                     col as never,
                     {} as never,

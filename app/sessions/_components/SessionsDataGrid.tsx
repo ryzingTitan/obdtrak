@@ -68,7 +68,7 @@ export default function SessionsDataGrid() {
         headerAlign: "center",
         align: "center",
         flex: 1,
-        valueGetter: (value, row) => {
+        valueGetter: (_value, row) => {
           const year = row.carYear || "";
           const make = row.carMake || "";
           const model = row.carModel || "";

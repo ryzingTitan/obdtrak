@@ -91,13 +91,13 @@ export default function ThrottleChart({ records }: ThrottleChartProps) {
         ]}
         series={[
           {
-            data: records.map((record) => record.throttlePosition),
+            data: records.map((record) => record.throttlePosition ?? null),
             label: "Throttle Position (%)",
             showMark: false,
             yAxisId: "leftAxis",
           },
           {
-            data: records.map((record) => record.engineRpm),
+            data: records.map((record) => record.engineRpm ?? null),
             label: "Engine RPM",
             showMark: false,
             yAxisId: "rightAxis",

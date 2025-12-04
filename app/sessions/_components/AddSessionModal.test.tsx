@@ -55,7 +55,7 @@ describe("AddSessionModal", () => {
       formik: mockFormik as never,
     });
 
-    vi.mocked(useSWR).mockImplementation((key: string) => {
+    vi.mocked(useSWR).mockImplementation((key) => {
       if (key === "/cars") {
         return {
           data: mockCars,
@@ -271,7 +271,7 @@ describe("AddSessionModal", () => {
   it("should handle empty tracks list", async () => {
     const user = userEvent.setup();
 
-    vi.mocked(useSWR).mockImplementation((key: string) => {
+    vi.mocked(useSWR).mockImplementation((key) => {
       if (key === "/cars") {
         return {
           data: mockCars,
@@ -311,7 +311,7 @@ describe("AddSessionModal", () => {
   it("should handle empty cars list", async () => {
     const user = userEvent.setup();
 
-    vi.mocked(useSWR).mockImplementation((key: string) => {
+    vi.mocked(useSWR).mockImplementation((key) => {
       if (key === "/cars") {
         return {
           data: [],

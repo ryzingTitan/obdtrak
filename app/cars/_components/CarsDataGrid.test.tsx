@@ -29,6 +29,14 @@ interface MockGridActionsCellItemProps {
   onClick: () => void;
 }
 
+interface MockGridAction {
+  key: string;
+  props: {
+    label: string;
+    onClick: () => void;
+  };
+}
+
 vi.mock("@mui/x-data-grid", () => ({
   DataGrid: vi.fn(({ rows, columns, loading, slots }: MockDataGridProps) => {
     if (loading) {
@@ -65,8 +73,7 @@ vi.mock("@mui/x-data-grid", () => ({
                   return React.createElement(
                     "td",
                     { key: col.field },
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    ...actions.map((action: any) => {
+                    ...actions.map((action: MockGridAction) => {
                       return React.createElement("button", {
                         key: action.key,
                         "aria-label": action.props.label,
@@ -422,7 +429,12 @@ describe("CarsDataGrid", () => {
 
   it("should handle undefined year values in formatter", () => {
     const carsWithUndefinedYear: Car[] = [
-      { id: "1", year: undefined, make: "Toyota", model: "Camry" },
+      {
+        id: "1",
+        year: undefined as unknown as number,
+        make: "Toyota",
+        model: "Camry",
+      },
     ];
 
     vi.mocked(useCars).mockReturnValue({

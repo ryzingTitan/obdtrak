@@ -93,9 +93,12 @@ describe("Sessions Server Actions", () => {
     it("should create a session successfully with user data", async () => {
       const mockSession = {
         user: {
+          sub: "auth0|123456",
           email: "test@example.com",
           name: "John Doe",
         },
+        tokenSet: {} as never,
+        internal: {} as never,
       };
 
       vi.mocked(auth0.getSession).mockResolvedValue(mockSession);
@@ -126,9 +129,12 @@ describe("Sessions Server Actions", () => {
     it("should handle user with single name", async () => {
       const mockSession = {
         user: {
+          sub: "auth0|123456",
           email: "test@example.com",
           name: "John",
         },
+        tokenSet: {} as never,
+        internal: {} as never,
       };
 
       vi.mocked(auth0.getSession).mockResolvedValue(mockSession);
@@ -150,8 +156,11 @@ describe("Sessions Server Actions", () => {
     it("should handle missing user email", async () => {
       const mockSession = {
         user: {
+          sub: "auth0|123456",
           name: "John Doe",
         },
+        tokenSet: {} as never,
+        internal: {} as never,
       };
 
       vi.mocked(auth0.getSession).mockResolvedValue(mockSession);
@@ -172,8 +181,11 @@ describe("Sessions Server Actions", () => {
     it("should handle missing user name", async () => {
       const mockSession = {
         user: {
+          sub: "auth0|123456",
           email: "test@example.com",
         },
+        tokenSet: {} as never,
+        internal: {} as never,
       };
 
       vi.mocked(auth0.getSession).mockResolvedValue(mockSession);
@@ -213,9 +225,12 @@ describe("Sessions Server Actions", () => {
     it("should handle errors when creating a session fails", async () => {
       const mockSession = {
         user: {
+          sub: "auth0|123456",
           email: "test@example.com",
           name: "John Doe",
         },
+        tokenSet: {} as never,
+        internal: {} as never,
       };
 
       vi.mocked(auth0.getSession).mockResolvedValue(mockSession);
@@ -234,9 +249,12 @@ describe("Sessions Server Actions", () => {
     it("should include upload files in form data when provided", async () => {
       const mockSession = {
         user: {
+          sub: "auth0|123456",
           email: "test@example.com",
           name: "John Doe",
         },
+        tokenSet: {} as never,
+        internal: {} as never,
       };
 
       vi.mocked(auth0.getSession).mockResolvedValue(mockSession);
@@ -264,9 +282,12 @@ describe("Sessions Server Actions", () => {
     it("should handle empty upload files array", async () => {
       const mockSession = {
         user: {
+          sub: "auth0|123456",
           email: "test@example.com",
           name: "John Doe",
         },
+        tokenSet: {} as never,
+        internal: {} as never,
       };
 
       vi.mocked(auth0.getSession).mockResolvedValue(mockSession);
@@ -289,9 +310,12 @@ describe("Sessions Server Actions", () => {
     it("should handle ApiError specifically", async () => {
       const mockSession = {
         user: {
+          sub: "auth0|123456",
           email: "test@example.com",
           name: "John Doe",
         },
+        tokenSet: {} as never,
+        internal: {} as never,
       };
 
       const apiError = new ApiError("API Error", 500, "Internal Server Error");
@@ -313,9 +337,12 @@ describe("Sessions Server Actions", () => {
     it("should update a session successfully with user data", async () => {
       const mockSession = {
         user: {
+          sub: "auth0|123456",
           email: "test@example.com",
           name: "John Doe",
         },
+        tokenSet: {} as never,
+        internal: {} as never,
       };
 
       vi.mocked(auth0.getSession).mockResolvedValue(mockSession);
@@ -346,9 +373,12 @@ describe("Sessions Server Actions", () => {
     it("should handle user with single name", async () => {
       const mockSession = {
         user: {
+          sub: "auth0|123456",
           email: "test@example.com",
           name: "John",
         },
+        tokenSet: {} as never,
+        internal: {} as never,
       };
 
       vi.mocked(auth0.getSession).mockResolvedValue(mockSession);
@@ -370,8 +400,11 @@ describe("Sessions Server Actions", () => {
     it("should handle missing user email", async () => {
       const mockSession = {
         user: {
+          sub: "auth0|123456",
           name: "John Doe",
         },
+        tokenSet: {} as never,
+        internal: {} as never,
       };
 
       vi.mocked(auth0.getSession).mockResolvedValue(mockSession);
@@ -392,8 +425,11 @@ describe("Sessions Server Actions", () => {
     it("should handle missing user name", async () => {
       const mockSession = {
         user: {
+          sub: "auth0|123456",
           email: "test@example.com",
         },
+        tokenSet: {} as never,
+        internal: {} as never,
       };
 
       vi.mocked(auth0.getSession).mockResolvedValue(mockSession);
@@ -433,9 +469,12 @@ describe("Sessions Server Actions", () => {
     it("should include upload files in form data when provided", async () => {
       const mockSession = {
         user: {
+          sub: "auth0|123456",
           email: "test@example.com",
           name: "John Doe",
         },
+        tokenSet: {} as never,
+        internal: {} as never,
       };
 
       vi.mocked(auth0.getSession).mockResolvedValue(mockSession);
@@ -461,9 +500,12 @@ describe("Sessions Server Actions", () => {
     it("should handle empty upload files array", async () => {
       const mockSession = {
         user: {
+          sub: "auth0|123456",
           email: "test@example.com",
           name: "John Doe",
         },
+        tokenSet: {} as never,
+        internal: {} as never,
       };
 
       vi.mocked(auth0.getSession).mockResolvedValue(mockSession);
@@ -486,9 +528,12 @@ describe("Sessions Server Actions", () => {
     it("should handle errors when updating a session fails", async () => {
       const mockSession = {
         user: {
+          sub: "auth0|123456",
           email: "test@example.com",
           name: "John Doe",
         },
+        tokenSet: {} as never,
+        internal: {} as never,
       };
 
       vi.mocked(auth0.getSession).mockResolvedValue(mockSession);
@@ -507,9 +552,12 @@ describe("Sessions Server Actions", () => {
     it("should handle ApiError specifically", async () => {
       const mockSession = {
         user: {
+          sub: "auth0|123456",
           email: "test@example.com",
           name: "John Doe",
         },
+        tokenSet: {} as never,
+        internal: {} as never,
       };
 
       const apiError = new ApiError("API Error", 500, "Internal Server Error");
@@ -529,9 +577,12 @@ describe("Sessions Server Actions", () => {
     it("should handle multiple upload files", async () => {
       const mockSession = {
         user: {
+          sub: "auth0|123456",
           email: "test@example.com",
           name: "John Doe",
         },
+        tokenSet: {} as never,
+        internal: {} as never,
       };
 
       vi.mocked(auth0.getSession).mockResolvedValue(mockSession);

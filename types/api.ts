@@ -31,19 +31,20 @@ export interface SessionData {
 }
 
 export interface Record {
-  sessionId: number;
+  id?: string;
+  sessionId: string;
   timestamp: string;
   longitude: number;
   latitude: number;
   altitude: number;
-  intakeAirTemperature: number;
-  boostPressure: number;
-  coolantTemperature: number;
-  engineRpm: number;
-  speed: number;
-  throttlePosition: number;
-  airFuelRatio: number;
-  oilPressure: number;
-  manifoldPressure: number;
-  massAirFlow: number;
+  intakeAirTemperature: number | null | undefined;
+  boostPressure: number | null | undefined;
+  coolantTemperature: number | null | undefined;
+  engineRpm: number | null | undefined;
+  speed: number | null | undefined;
+  throttlePosition: number | null | undefined;
+  airFuelRatio: number | null | undefined;
+  oilPressure: number | null | undefined;
+  manifoldPressure: number | null | undefined;
+  massAirFlow: number | null | undefined;
 }

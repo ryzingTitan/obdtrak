@@ -66,7 +66,7 @@ export default function OilPressureChart({ records }: OilPressureChartProps) {
         ]}
         series={[
           {
-            data: records.map((record) => record.oilPressure),
+            data: records.map((record) => record.oilPressure ?? null),
             label: "Oil Pressure (PSI)",
             showMark: false,
           },

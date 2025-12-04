@@ -26,8 +26,7 @@ const wrapper = ({ children }: { children: React.ReactNode }) => {
 
 describe("useAddSessionForm", () => {
   const mockEnqueueSnackbar = vi.fn();
-  const mockMutate = vi.fn();
-
+  vi.fn();
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(useSnackbar).mockReturnValue({

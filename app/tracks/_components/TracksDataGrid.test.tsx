@@ -9,8 +9,9 @@ import {
   GridRowModesModel,
   GridColDef,
   GridValidRowModel,
+  GridActionsCellItemProps,
 } from "@mui/x-data-grid";
-import React from "react";
+import React, { ReactElement } from "react";
 
 vi.mock("@/hooks/useTracks");
 
@@ -81,14 +82,15 @@ vi.mock("@mui/x-data-grid", () => ({
               { key: row.id },
               ...columns.map((col) => {
                 if (col.type === "actions" && "getActions" in col) {
-                  const actions = col.getActions({ id: row.id } as never);
+                  const actions = col.getActions({
+                    id: row.id,
+                  } as never) as readonly ReactElement<GridActionsCellItemProps>[];
                   return React.createElement(
                     "td",
                     { key: col.field },
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    ...actions.map((action: any) => {
+                    ...actions.map((action) => {
                       return React.createElement("button", {
-                        key: action.key,
+                        key: action.key ?? undefined,
                         "aria-label": action.props.label,
                         onClick: action.props.onClick,
                       });

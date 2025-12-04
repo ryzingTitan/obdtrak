@@ -31,15 +31,17 @@ const wrapper = ({ children }: { children: React.ReactNode }) => {
 
 describe("useEditSessionForm", () => {
   const mockEnqueueSnackbar = vi.fn();
-  const mockMutate = vi.fn();
 
   const mockSession: Session = {
     id: "session123",
+    startTime: "2024-01-15T10:00:00Z",
+    endTime: "2024-01-15T11:00:00Z",
     carYear: 2020,
     carMake: "Toyota",
     carModel: "Supra",
     trackName: "Laguna Seca",
-    uploadedFiles: [],
+    trackLatitude: 36.5844,
+    trackLongitude: -121.7544,
   };
 
   const mockCars = [
@@ -61,14 +63,14 @@ describe("useEditSessionForm", () => {
     {
       id: "track123",
       name: "Laguna Seca",
-      location: "California",
-      length: 2.238,
+      latitude: 36.5844,
+      longitude: -121.7544,
     },
     {
       id: "track456",
       name: "Watkins Glen",
-      location: "New York",
-      length: 3.4,
+      latitude: 42.3369,
+      longitude: -76.9275,
     },
   ];
 
@@ -471,11 +473,14 @@ describe("useEditSessionForm", () => {
 
     const newSession: Session = {
       id: "session456",
+      startTime: "2024-01-16T14:00:00Z",
+      endTime: "2024-01-16T15:00:00Z",
       carYear: 2021,
       carMake: "Honda",
       carModel: "Civic",
       trackName: "Watkins Glen",
-      uploadedFiles: [],
+      trackLatitude: 42.3369,
+      trackLongitude: -76.9275,
     };
 
     rerender({ session: newSession });

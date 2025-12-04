@@ -5,11 +5,13 @@ A track day telemetry application for recording, analyzing, and managing motorsp
 ## Features
 
 - **Session Management**: Create, edit, and view track day sessions
-- **Analytics Dashboard**: View detailed analytics for each session
+- **Analytics Dashboard**: View detailed analytics for each session including temperature, boost, throttle, speed, and oil pressure charts
+- **Telemetry**: Real-time telemetry data visualization and analysis
 - **Track Management**: Manage track information with inline editing
+- **Car Management**: Manage vehicle information for tracked sessions
 - **Secure Authentication**: Auth0-based authentication with JWT tokens
 - **Real-time Updates**: SWR-based data fetching with automatic revalidation
-- **Responsive Design**: Material UI components with mobile-friendly layouts
+- **Responsive Design**: Material UI components with mobile-friendly bottom navigation
 
 ## Tech Stack
 
@@ -112,7 +114,10 @@ obdtrak/
 ├── app/                    # Next.js App Router pages
 │   ├── layout.tsx         # Root layout with MUI theme, SWR config
 │   ├── page.tsx           # Home page
+│   ├── analytics/         # Analytics dashboard pages
+│   ├── telemetry/         # Telemetry pages
 │   ├── tracks/            # Track management pages
+│   ├── cars/              # Car management pages
 │   └── sessions/          # Session management pages
 ├── components/            # Shared React components
 │   ├── Header.tsx

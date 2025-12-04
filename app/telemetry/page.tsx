@@ -8,9 +8,7 @@ export default function Telemetry() {
       <Typography variant="h4" component="h1" gutterBottom>
         Telemetry
       </Typography>
-      <Typography variant="body1">
-        Telemetry page coming soon...
-      </Typography>
+      <Typography variant="body1">Telemetry page coming soon...</Typography>
     </Box>
   );
 }

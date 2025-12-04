@@ -20,6 +20,7 @@ export default function AnalyticsTabs({
         <Tab label="Summary" />
         <Tab label="Temperature" />
         <Tab label="Boost" />
+        <Tab label="Throttle" />
       </Tabs>
     </Box>
   );

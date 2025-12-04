@@ -407,4 +407,34 @@ describe("CarsDataGrid", () => {
     expect(mockHandlersWithCancel.handleCancelClick).toHaveBeenCalledWith("1");
     expect(mockCancelHandler).toHaveBeenCalledTimes(1);
   });
+
+  it("should format year values as strings", () => {
+    const { container } = render(<CarsDataGrid />);
+    const dataGrid = container.querySelector('[data-testid="data-grid"]');
+
+    expect(
+      within(dataGrid as HTMLElement).getByText("2020"),
+    ).toBeInTheDocument();
+    expect(
+      within(dataGrid as HTMLElement).getByText("2021"),
+    ).toBeInTheDocument();
+  });
+
+  it("should handle undefined year values in formatter", () => {
+    const carsWithUndefinedYear: Car[] = [
+      { id: "1", year: undefined, make: "Toyota", model: "Camry" },
+    ];
+
+    vi.mocked(useCars).mockReturnValue({
+      rows: carsWithUndefinedYear as Car[],
+      isLoading: false,
+      rowModesModel: {} as GridRowModesModel,
+      ...mockHandlers,
+    });
+
+    const { container } = render(<CarsDataGrid />);
+    const dataGrid = container.querySelector('[data-testid="data-grid"]');
+
+    expect(dataGrid).toBeInTheDocument();
+  });
 });

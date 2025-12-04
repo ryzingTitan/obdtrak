@@ -13,6 +13,7 @@ import { fetchWithAuth } from "./api";
 import Track from "@/types/api";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
+import { ApiError } from "./api-error";
 
 process.env.API_BASE_URL = "http://localhost:3001/api";
 
@@ -93,6 +94,13 @@ describe("Tracks Server Actions", () => {
         "Failed to fetch tracks",
       );
     });
+
+    it("should handle ApiError specifically", async () => {
+      const apiError = new ApiError("API Error", 500, "Internal Server Error");
+      vi.mocked(fetchWithAuth).mockRejectedValue(apiError);
+
+      await expect(getAllTracks("/tracks")).rejects.toThrow(apiError);
+    });
   });
 
   describe("createTrack", () => {
@@ -134,6 +142,19 @@ describe("Tracks Server Actions", () => {
         "Failed to create track",
       );
     });
+
+    it("should handle ApiError specifically", async () => {
+      const apiError = new ApiError("API Error", 400, "Bad Request");
+      vi.mocked(fetchWithAuth).mockRejectedValue(apiError);
+
+      const newTrack: Partial<Track> = {
+        name: "Test Track",
+        latitude: 0,
+        longitude: 0,
+      };
+
+      await expect(createTrack("/tracks", newTrack)).rejects.toThrow(apiError);
+    });
   });
 
   describe("updateTrack", () => {
@@ -171,6 +192,19 @@ describe("Tracks Server Actions", () => {
         "Failed to update track",
       );
     });
+
+    it("should handle ApiError specifically", async () => {
+      const apiError = new ApiError("API Error", 404, "Not Found");
+      vi.mocked(fetchWithAuth).mockRejectedValue(apiError);
+
+      const patch: Partial<Track> = {
+        name: "Test Track",
+      };
+
+      await expect(updateTrack("/tracks", "1", patch)).rejects.toThrow(
+        apiError,
+      );
+    });
   });
 
   describe("deleteTrack", () => {
@@ -190,6 +224,13 @@ describe("Tracks Server Actions", () => {
       await expect(deleteTrack("/tracks", "1")).rejects.toThrow(
         "Failed to delete track",
       );
+    });
+
+    it("should handle ApiError specifically", async () => {
+      const apiError = new ApiError("API Error", 403, "Forbidden");
+      vi.mocked(fetchWithAuth).mockRejectedValue(apiError);
+
+      await expect(deleteTrack("/tracks", "1")).rejects.toThrow(apiError);
     });
   });
 });

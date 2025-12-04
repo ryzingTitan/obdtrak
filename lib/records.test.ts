@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { getRecordsBySessionId } from "./records";
 import { fetchWithAuth } from "./api";
 import { Record } from "@/types/api";
+import { ApiError } from "./api-error";
 
 process.env.API_BASE_URL = "http://localhost:3001/api";
 
@@ -65,6 +66,15 @@ describe("Records Server Actions", () => {
       await expect(
         getRecordsBySessionId("/api/sessions/1/records"),
       ).rejects.toThrow("Failed to fetch records");
+    });
+
+    it("should handle ApiError specifically", async () => {
+      const apiError = new ApiError("API Error", 404, "Not Found");
+      vi.mocked(fetchWithAuth).mockRejectedValue(apiError);
+
+      await expect(
+        getRecordsBySessionId("/api/sessions/1/records"),
+      ).rejects.toThrow(apiError);
     });
   });
 });

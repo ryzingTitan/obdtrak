@@ -8,12 +8,13 @@ import {
   beforeAll,
   afterAll,
 } from "vitest";
-import { getAllSessions, createSessions } from "./sessions";
+import { getAllSessions, createSessions, updateSession } from "./sessions";
 import { fetchWithAuth } from "./api";
 import { Session, SessionData } from "@/types/api";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { auth0 } from "./auth0";
+import { ApiError } from "./api-error";
 
 process.env.API_BASE_URL = "http://localhost:3001/api";
 
@@ -228,6 +229,340 @@ describe("Sessions Server Actions", () => {
       await expect(createSessions("/sessions", sessionData)).rejects.toThrow(
         "Failed to create sessions",
       );
+    });
+
+    it("should include upload files in form data when provided", async () => {
+      const mockSession = {
+        user: {
+          email: "test@example.com",
+          name: "John Doe",
+        },
+      };
+
+      vi.mocked(auth0.getSession).mockResolvedValue(mockSession);
+      vi.mocked(fetchWithAuth).mockResolvedValue(undefined);
+
+      const mockFile1 = new File(["content1"], "file1.csv");
+      const mockFile2 = new File(["content2"], "file2.csv");
+
+      const sessionData: SessionData = {
+        carId: "car123",
+        trackId: "track456",
+        uploadFiles: [mockFile1, mockFile2],
+      };
+
+      await createSessions("/sessions", sessionData);
+
+      const formData = vi.mocked(fetchWithAuth).mock.calls[0][1]
+        ?.body as FormData;
+      const files = formData.getAll("uploadFiles");
+      expect(files).toHaveLength(2);
+      expect(files[0]).toBe(mockFile1);
+      expect(files[1]).toBe(mockFile2);
+    });
+
+    it("should handle empty upload files array", async () => {
+      const mockSession = {
+        user: {
+          email: "test@example.com",
+          name: "John Doe",
+        },
+      };
+
+      vi.mocked(auth0.getSession).mockResolvedValue(mockSession);
+      vi.mocked(fetchWithAuth).mockResolvedValue(undefined);
+
+      const sessionData: SessionData = {
+        carId: "car123",
+        trackId: "track456",
+        uploadFiles: [],
+      };
+
+      await createSessions("/sessions", sessionData);
+
+      const formData = vi.mocked(fetchWithAuth).mock.calls[0][1]
+        ?.body as FormData;
+      const files = formData.getAll("uploadFiles");
+      expect(files).toHaveLength(0);
+    });
+
+    it("should handle ApiError specifically", async () => {
+      const mockSession = {
+        user: {
+          email: "test@example.com",
+          name: "John Doe",
+        },
+      };
+
+      const apiError = new ApiError("API Error", 500, "Internal Server Error");
+      vi.mocked(auth0.getSession).mockResolvedValue(mockSession);
+      vi.mocked(fetchWithAuth).mockRejectedValue(apiError);
+
+      const sessionData: SessionData = {
+        carId: "car123",
+        trackId: "track456",
+      };
+
+      await expect(createSessions("/sessions", sessionData)).rejects.toThrow(
+        apiError,
+      );
+    });
+  });
+
+  describe("updateSession", () => {
+    it("should update a session successfully with user data", async () => {
+      const mockSession = {
+        user: {
+          email: "test@example.com",
+          name: "John Doe",
+        },
+      };
+
+      vi.mocked(auth0.getSession).mockResolvedValue(mockSession);
+      vi.mocked(fetchWithAuth).mockResolvedValue(undefined);
+
+      const sessionData: SessionData = {
+        carId: "car123",
+        trackId: "track456",
+      };
+
+      await updateSession("/sessions/1", sessionData);
+
+      expect(auth0.getSession).toHaveBeenCalled();
+      expect(fetchWithAuth).toHaveBeenCalledWith("/sessions/1", {
+        method: "PUT",
+        body: expect.any(FormData),
+      });
+
+      const formData = vi.mocked(fetchWithAuth).mock.calls[0][1]
+        ?.body as FormData;
+      expect(formData.get("carId")).toBe("car123");
+      expect(formData.get("trackId")).toBe("track456");
+      expect(formData.get("userEmail")).toBe("test@example.com");
+      expect(formData.get("userFirstName")).toBe("John");
+      expect(formData.get("userLastName")).toBe("Doe");
+    });
+
+    it("should handle user with single name", async () => {
+      const mockSession = {
+        user: {
+          email: "test@example.com",
+          name: "John",
+        },
+      };
+
+      vi.mocked(auth0.getSession).mockResolvedValue(mockSession);
+      vi.mocked(fetchWithAuth).mockResolvedValue(undefined);
+
+      const sessionData: SessionData = {
+        carId: "car123",
+        trackId: "track456",
+      };
+
+      await updateSession("/sessions/1", sessionData);
+
+      const formData = vi.mocked(fetchWithAuth).mock.calls[0][1]
+        ?.body as FormData;
+      expect(formData.get("userFirstName")).toBe("John");
+      expect(formData.get("userLastName")).toBe("");
+    });
+
+    it("should handle missing user email", async () => {
+      const mockSession = {
+        user: {
+          name: "John Doe",
+        },
+      };
+
+      vi.mocked(auth0.getSession).mockResolvedValue(mockSession);
+      vi.mocked(fetchWithAuth).mockResolvedValue(undefined);
+
+      const sessionData: SessionData = {
+        carId: "car123",
+        trackId: "track456",
+      };
+
+      await updateSession("/sessions/1", sessionData);
+
+      const formData = vi.mocked(fetchWithAuth).mock.calls[0][1]
+        ?.body as FormData;
+      expect(formData.get("userEmail")).toBe("");
+    });
+
+    it("should handle missing user name", async () => {
+      const mockSession = {
+        user: {
+          email: "test@example.com",
+        },
+      };
+
+      vi.mocked(auth0.getSession).mockResolvedValue(mockSession);
+      vi.mocked(fetchWithAuth).mockResolvedValue(undefined);
+
+      const sessionData: SessionData = {
+        carId: "car123",
+        trackId: "track456",
+      };
+
+      await updateSession("/sessions/1", sessionData);
+
+      const formData = vi.mocked(fetchWithAuth).mock.calls[0][1]
+        ?.body as FormData;
+      expect(formData.get("userFirstName")).toBe("");
+      expect(formData.get("userLastName")).toBe("");
+    });
+
+    it("should handle null session", async () => {
+      vi.mocked(auth0.getSession).mockResolvedValue(null);
+      vi.mocked(fetchWithAuth).mockResolvedValue(undefined);
+
+      const sessionData: SessionData = {
+        carId: "car123",
+        trackId: "track456",
+      };
+
+      await updateSession("/sessions/1", sessionData);
+
+      const formData = vi.mocked(fetchWithAuth).mock.calls[0][1]
+        ?.body as FormData;
+      expect(formData.get("userEmail")).toBe("");
+      expect(formData.get("userFirstName")).toBe("");
+      expect(formData.get("userLastName")).toBe("");
+    });
+
+    it("should include upload files in form data when provided", async () => {
+      const mockSession = {
+        user: {
+          email: "test@example.com",
+          name: "John Doe",
+        },
+      };
+
+      vi.mocked(auth0.getSession).mockResolvedValue(mockSession);
+      vi.mocked(fetchWithAuth).mockResolvedValue(undefined);
+
+      const mockFile = new File(["content"], "file.csv");
+
+      const sessionData: SessionData = {
+        carId: "car123",
+        trackId: "track456",
+        uploadFiles: [mockFile],
+      };
+
+      await updateSession("/sessions/1", sessionData);
+
+      const formData = vi.mocked(fetchWithAuth).mock.calls[0][1]
+        ?.body as FormData;
+      const files = formData.getAll("uploadFile");
+      expect(files).toHaveLength(1);
+      expect(files[0]).toBe(mockFile);
+    });
+
+    it("should handle empty upload files array", async () => {
+      const mockSession = {
+        user: {
+          email: "test@example.com",
+          name: "John Doe",
+        },
+      };
+
+      vi.mocked(auth0.getSession).mockResolvedValue(mockSession);
+      vi.mocked(fetchWithAuth).mockResolvedValue(undefined);
+
+      const sessionData: SessionData = {
+        carId: "car123",
+        trackId: "track456",
+        uploadFiles: [],
+      };
+
+      await updateSession("/sessions/1", sessionData);
+
+      const formData = vi.mocked(fetchWithAuth).mock.calls[0][1]
+        ?.body as FormData;
+      const files = formData.getAll("uploadFile");
+      expect(files).toHaveLength(0);
+    });
+
+    it("should handle errors when updating a session fails", async () => {
+      const mockSession = {
+        user: {
+          email: "test@example.com",
+          name: "John Doe",
+        },
+      };
+
+      vi.mocked(auth0.getSession).mockResolvedValue(mockSession);
+      vi.mocked(fetchWithAuth).mockRejectedValue(new Error("Network error"));
+
+      const sessionData: SessionData = {
+        carId: "car123",
+        trackId: "track456",
+      };
+
+      await expect(updateSession("/sessions/1", sessionData)).rejects.toThrow(
+        "Failed to update session",
+      );
+    });
+
+    it("should handle ApiError specifically", async () => {
+      const mockSession = {
+        user: {
+          email: "test@example.com",
+          name: "John Doe",
+        },
+      };
+
+      const apiError = new ApiError("API Error", 500, "Internal Server Error");
+      vi.mocked(auth0.getSession).mockResolvedValue(mockSession);
+      vi.mocked(fetchWithAuth).mockRejectedValue(apiError);
+
+      const sessionData: SessionData = {
+        carId: "car123",
+        trackId: "track456",
+      };
+
+      await expect(updateSession("/sessions/1", sessionData)).rejects.toThrow(
+        apiError,
+      );
+    });
+
+    it("should handle multiple upload files", async () => {
+      const mockSession = {
+        user: {
+          email: "test@example.com",
+          name: "John Doe",
+        },
+      };
+
+      vi.mocked(auth0.getSession).mockResolvedValue(mockSession);
+      vi.mocked(fetchWithAuth).mockResolvedValue(undefined);
+
+      const mockFile1 = new File(["content1"], "file1.csv");
+      const mockFile2 = new File(["content2"], "file2.csv");
+
+      const sessionData: SessionData = {
+        carId: "car123",
+        trackId: "track456",
+        uploadFiles: [mockFile1, mockFile2],
+      };
+
+      await updateSession("/sessions/1", sessionData);
+
+      const formData = vi.mocked(fetchWithAuth).mock.calls[0][1]
+        ?.body as FormData;
+      const files = formData.getAll("uploadFile");
+      expect(files).toHaveLength(2);
+      expect(files[0]).toBe(mockFile1);
+      expect(files[1]).toBe(mockFile2);
+    });
+  });
+
+  describe("getAllSessions - ApiError handling", () => {
+    it("should handle ApiError specifically", async () => {
+      const apiError = new ApiError("API Error", 404, "Not Found");
+      vi.mocked(fetchWithAuth).mockRejectedValue(apiError);
+
+      await expect(getAllSessions("/sessions")).rejects.toThrow(apiError);
     });
   });
 });

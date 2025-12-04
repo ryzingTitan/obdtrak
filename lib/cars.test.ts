@@ -13,6 +13,7 @@ import { fetchWithAuth } from "./api";
 import { Car } from "@/types/api";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
+import { ApiError } from "./api-error";
 
 process.env.API_BASE_URL = "http://localhost:3001/api";
 
@@ -86,6 +87,13 @@ describe("Cars Server Actions", () => {
 
       await expect(getAllCars("/cars")).rejects.toThrow("Failed to fetch cars");
     });
+
+    it("should handle ApiError specifically", async () => {
+      const apiError = new ApiError("API Error", 500, "Internal Server Error");
+      vi.mocked(fetchWithAuth).mockRejectedValue(apiError);
+
+      await expect(getAllCars("/cars")).rejects.toThrow(apiError);
+    });
   });
 
   describe("createCar", () => {
@@ -127,6 +135,19 @@ describe("Cars Server Actions", () => {
         "Failed to create car",
       );
     });
+
+    it("should handle ApiError specifically", async () => {
+      const apiError = new ApiError("API Error", 400, "Bad Request");
+      vi.mocked(fetchWithAuth).mockRejectedValue(apiError);
+
+      const newCar: Partial<Car> = {
+        year: 2022,
+        make: "Ford",
+        model: "Mustang",
+      };
+
+      await expect(createCar("/cars", newCar)).rejects.toThrow(apiError);
+    });
   });
 
   describe("updateCar", () => {
@@ -164,6 +185,17 @@ describe("Cars Server Actions", () => {
         "Failed to update car",
       );
     });
+
+    it("should handle ApiError specifically", async () => {
+      const apiError = new ApiError("API Error", 404, "Not Found");
+      vi.mocked(fetchWithAuth).mockRejectedValue(apiError);
+
+      const patch: Partial<Car> = {
+        make: "Test Car",
+      };
+
+      await expect(updateCar("/cars", "1", patch)).rejects.toThrow(apiError);
+    });
   });
 
   describe("deleteCar", () => {
@@ -183,6 +215,13 @@ describe("Cars Server Actions", () => {
       await expect(deleteCar("/cars", "1")).rejects.toThrow(
         "Failed to delete car",
       );
+    });
+
+    it("should handle ApiError specifically", async () => {
+      const apiError = new ApiError("API Error", 403, "Forbidden");
+      vi.mocked(fetchWithAuth).mockRejectedValue(apiError);
+
+      await expect(deleteCar("/cars", "1")).rejects.toThrow(apiError);
     });
   });
 });

@@ -26,6 +26,11 @@ export default function BoostChart({ records }: BoostChartProps) {
             label: "Boost Pressure (PSI)",
             showMark: false,
           },
+          {
+            data: records.map((record) => record.manifoldPressure),
+            label: "Manifold Pressure (PSI)",
+            showMark: false,
+          },
         ]}
         height={400}
         margin={{ left: 70, right: 20, top: 50, bottom: 70 }}

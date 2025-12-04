@@ -11,6 +11,7 @@ import SummaryTab from "./_components/SummaryTab";
 import TemperatureChart from "./_components/TemperatureChart";
 import BoostChart from "./_components/BoostChart";
 import ThrottleChart from "./_components/ThrottleChart";
+import SpeedChart from "./_components/SpeedChart";
 
 export default function Analytics() {
   const { sessions, isLoading: sessionsLoading } = useSessions();
@@ -43,6 +44,7 @@ export default function Analytics() {
           {currentTab === 1 && <TemperatureChart records={records} />}
           {currentTab === 2 && <BoostChart records={records} />}
           {currentTab === 3 && <ThrottleChart records={records} />}
+          {currentTab === 4 && <SpeedChart records={records} />}
         </>
       )}
     </Box>

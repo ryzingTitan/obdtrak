@@ -116,7 +116,7 @@ export default function SummaryTab({
       getRowId={(row) =>
         `${row.sessionId}-${row.timestamp}-${row.latitude}-${row.longitude}`
       }
-      sx={{ mt: 2, mb: 8, mr: 2, ml: 2 }}
+      sx={{ mb: 8 }}
     />
   );
 }

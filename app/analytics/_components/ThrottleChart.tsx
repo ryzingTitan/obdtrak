@@ -11,7 +11,7 @@ interface ThrottleChartProps {
 
 export default function ThrottleChart({ records }: ThrottleChartProps) {
   return (
-    <Box sx={{ mt: 2, mb: 8, mr: 2, ml: 2, height: 400 }}>
+    <Box sx={{ mt: 2, mb: 2 }}>
       <LineChart
         xAxis={[
           {
@@ -25,12 +25,14 @@ export default function ThrottleChart({ records }: ThrottleChartProps) {
             data: records.map((record) => record.throttlePosition),
             label: "Throttle Position (%)",
             showMark: false,
+            yAxisId: "leftAxis",
           },
           {
             data: records.map((record) => record.engineRpm),
             label: "Engine RPM",
             showMark: false,
             yAxisId: "rightAxis",
+            valueFormatter: (value) => (value ?? 0).toString(),
           },
         ]}
         yAxis={[
@@ -39,11 +41,11 @@ export default function ThrottleChart({ records }: ThrottleChartProps) {
           },
           {
             id: "rightAxis",
+            position: "right",
+            valueFormatter: (value: string) => value.toString(),
           },
         ]}
-        rightAxis="rightAxis"
         height={400}
-        margin={{ left: 70, right: 70, top: 50, bottom: 70 }}
         grid={{ vertical: true, horizontal: true }}
       />
     </Box>

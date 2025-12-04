@@ -11,7 +11,7 @@ interface SpeedChartProps {
 
 export default function SpeedChart({ records }: SpeedChartProps) {
   return (
-    <Box sx={{ mt: 2, mb: 8, mr: 2, ml: 2, height: 400 }}>
+    <Box sx={{ mb: 2 }}>
       <LineChart
         xAxis={[
           {
@@ -28,7 +28,6 @@ export default function SpeedChart({ records }: SpeedChartProps) {
           },
         ]}
         height={400}
-        margin={{ left: 70, right: 70, top: 50, bottom: 70 }}
         grid={{ vertical: true, horizontal: true }}
       />
     </Box>

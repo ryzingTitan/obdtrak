@@ -24,7 +24,7 @@ export default function SessionSelector({
   };
 
   return (
-    <Box sx={{ mb: 2 }}>
+    <Box sx={{ mb: 2, width: "50%", mx: "auto" }}>
       <Autocomplete
         options={sessions}
         getOptionLabel={getSessionLabel}

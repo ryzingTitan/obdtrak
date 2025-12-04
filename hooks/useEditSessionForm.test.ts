@@ -21,6 +21,12 @@ vi.mock("notistack", async () => {
   };
 });
 
+vi.mock("@auth0/nextjs-auth0", () => ({
+  useUser: vi.fn(() => ({
+    user: { email: "test@example.com" },
+  })),
+}));
+
 const wrapper = ({ children }: { children: React.ReactNode }) => {
   return React.createElement(
     SWRConfig,

@@ -37,46 +37,55 @@ export const useCars = () => {
 
   const handleEditClick = useCallback(
     (id: GridRowId) => () => {
-      setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
+      setRowModesModel((prev) => ({
+        ...prev,
+        [id]: { mode: GridRowModes.Edit },
+      }));
     },
-    [rowModesModel],
+    [],
   );
 
   const handleSaveClick = useCallback(
     (id: GridRowId) => () => {
-      setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
+      setRowModesModel((prev) => ({
+        ...prev,
+        [id]: { mode: GridRowModes.View },
+      }));
     },
-    [rowModesModel],
+    [],
   );
 
   const handleCancelClick = useCallback(
     (id: GridRowId) => () => {
-      setRowModesModel({
-        ...rowModesModel,
+      setRowModesModel((prev) => ({
+        ...prev,
         [id]: { mode: GridRowModes.View, ignoreModifications: true },
-      });
+      }));
 
       if (String(id).startsWith("new-")) {
         setRows((currentRows) => currentRows.filter((row) => row.id !== id));
       }
     },
-    [rowModesModel],
+    [],
   );
 
   const handleDeleteClick = useCallback(
     (id: GridRowId) => async () => {
-      const originalRows = [...rows];
-      const newRows = rows.filter((row) => row.id !== id);
-      setRows(newRows);
-
       if (String(id).startsWith("new-")) {
+        setRows((currentRows) => currentRows.filter((row) => row.id !== id));
         return;
       }
+
+      let originalRows: readonly Car[] = [];
+      setRows((currentRows) => {
+        originalRows = currentRows;
+        return currentRows.filter((row) => row.id !== id);
+      });
 
       try {
         await deleteCar(swrKey, String(id));
         await mutate(
-          newRows.filter((r) => !String(r.id).startsWith("new-")),
+          (currentData) => currentData?.filter((r) => r.id !== id),
           false,
         );
         enqueueSnackbar("Car deleted", { variant: "success" });
@@ -86,7 +95,7 @@ export const useCars = () => {
         enqueueSnackbar("Failed to delete car", { variant: "error" });
       }
     },
-    [rows, swrKey, mutate, enqueueSnackbar],
+    [swrKey, mutate, enqueueSnackbar],
   );
 
   const processRowUpdate = useCallback(

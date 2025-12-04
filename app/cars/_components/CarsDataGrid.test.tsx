@@ -30,10 +30,10 @@ interface MockGridActionsCellItemProps {
 }
 
 interface MockGridAction {
-  key: string;
+  key: string | null;
   props: {
-    label: string;
-    onClick: () => void;
+    label: React.ReactNode;
+    onClick?: React.MouseEventHandler<HTMLElement>;
   };
 }
 
@@ -75,9 +75,9 @@ vi.mock("@mui/x-data-grid", () => ({
                     { key: col.field },
                     ...actions.map((action: MockGridAction) => {
                       return React.createElement("button", {
-                        key: action.key,
+                        key: action.key ?? col.field,
                         "aria-label": action.props.label,
-                        onClick: action.props.onClick,
+                        onClick: action.props.onClick ?? (() => {}),
                       });
                     }),
                   );

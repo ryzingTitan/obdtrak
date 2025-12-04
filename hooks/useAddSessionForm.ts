@@ -1,14 +1,17 @@
 "use client";
 
 import { useFormik } from "formik";
-import { useSWRConfig } from "swr";
+import useSWR from "swr";
 import { useSnackbar } from "notistack";
-import { SessionData } from "@/types/api";
-import { createSessions } from "@/lib/sessions";
+import { SessionData, Session } from "@/types/api";
+import { createSessions, getAllSessions } from "@/lib/sessions";
 import { sessionValidationSchema } from "@/types/validations";
+import { useUser } from "@auth0/nextjs-auth0";
 
 export const useAddSessionForm = (onSuccess?: () => void) => {
-  const { mutate } = useSWRConfig();
+  const { user } = useUser();
+  const swrKey = `/sessions?userEmail=${user?.email}`;
+  const { mutate } = useSWR<Session[]>(swrKey, getAllSessions);
   const { enqueueSnackbar } = useSnackbar();
 
   const formik = useFormik({
@@ -25,8 +28,8 @@ export const useAddSessionForm = (onSuccess?: () => void) => {
           trackId: values.trackId,
           uploadFiles: values.uploadFiles,
         };
-        await createSessions(`/sessions`, newSession);
-        await mutate(`/sessions`);
+        await createSessions("/sessions", newSession);
+        await mutate();
         enqueueSnackbar("Session created", { variant: "success" });
         resetForm();
         if (onSuccess) {

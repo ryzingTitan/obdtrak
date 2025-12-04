@@ -1,20 +1,22 @@
 "use client";
 
 import { useFormik } from "formik";
-import { useSWRConfig } from "swr";
 import { useSnackbar } from "notistack";
 import { SessionData, Session } from "@/types/api";
-import { updateSession } from "@/lib/sessions";
+import { updateSession, getAllSessions } from "@/lib/sessions";
 import { sessionValidationSchema } from "@/types/validations";
 import useSWR from "swr";
 import { getAllCars } from "@/lib/cars";
 import { getAllTracks } from "@/lib/tracks";
+import { useUser } from "@auth0/nextjs-auth0";
 
 export const useEditSessionForm = (
   session: Session,
   onSuccess?: () => void,
 ) => {
-  const { mutate } = useSWRConfig();
+  const { user } = useUser();
+  const swrKey = `/sessions?userEmail=${user?.email}`;
+  const { mutate } = useSWR<Session[]>(swrKey, getAllSessions);
   const { enqueueSnackbar } = useSnackbar();
   const { data: cars } = useSWR(`/cars`, getAllCars);
   const { data: tracks } = useSWR(`/tracks`, getAllTracks);
@@ -48,7 +50,7 @@ export const useEditSessionForm = (
           uploadFiles: values.uploadFiles,
         };
         await updateSession(`/sessions/${session.id}`, sessionData);
-        await mutate(`/sessions`);
+        await mutate();
         enqueueSnackbar("Session updated", { variant: "success" });
         resetForm();
         if (onSuccess) {

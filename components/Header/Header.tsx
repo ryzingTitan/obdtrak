@@ -21,7 +21,7 @@ export default function Header() {
   return (
     <AppBar position="static">
       <Toolbar>
-        <Image src="/logo.png" alt="App Logo" width={50} height={50} />
+        <Image src="/logo.png" alt="App Logo" width={200} height={50} />
         <Stack
           direction="row"
           spacing={1}

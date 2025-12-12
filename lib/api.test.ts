@@ -46,6 +46,7 @@ describe("fetchWithAuth", () => {
   beforeEach(() => {
     vi.mocked(auth0.getAccessToken).mockResolvedValue({
       token: "test-access-token",
+      expiresAt: Date.now() + 3600000,
     });
   });
 

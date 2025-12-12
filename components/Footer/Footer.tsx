@@ -7,7 +7,7 @@ import DirectionsCar from "@mui/icons-material/DirectionsCar";
 import UploadFile from "@mui/icons-material/UploadFile";
 import Analytics from "@mui/icons-material/Analytics";
 import Insights from "@mui/icons-material/Insights";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import Paper from "@mui/material/Paper";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -22,19 +22,11 @@ const ROUTE_TO_INDEX: Record<string, number> = {
 export default function Footer() {
   const pathname = usePathname();
   const router = useRouter();
-  const [value, setValue] = useState(() => ROUTE_TO_INDEX[pathname] ?? 0);
 
-  // Sync navigation value with current pathname
-  useEffect(() => {
-    const index = ROUTE_TO_INDEX[pathname];
-    if (index !== undefined) {
-      setValue(index);
-    }
-  }, [pathname]);
+  // Derive navigation value from current pathname
+  const value = useMemo(() => ROUTE_TO_INDEX[pathname] ?? 0, [pathname]);
 
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
-
     switch (newValue) {
       case 0:
         router.push("/analytics");

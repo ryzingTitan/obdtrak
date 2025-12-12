@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-OBDTrak is a track day telemetry application built with Next.js 15, React 19, TypeScript 5, and Material UI v7. The app uses Auth0 for authentication and communicates with a separate backend API to manage track day data.
+OBDTrak is a track day telemetry application built with Next.js 16, React 19, TypeScript 5, and Material UI v7. The app uses Auth0 for authentication and communicates with a separate backend API to manage track day data.
 
 The application features:
 
@@ -18,29 +18,29 @@ The application features:
 
 **Core Framework & Runtime:**
 
-- Next.js 15.5.4 (App Router with Turbopack)
-- React 19.2.0
-- TypeScript 5
-- Node.js 20+ (Node.js 22 recommended)
+- Next.js 16.0.10 (App Router with Turbopack)
+- React 19.2.3
+- TypeScript 5.9.3
+- Node.js 20.9.0+ (Node.js 24 recommended)
 
 **UI & Styling:**
 
-- Material UI (MUI) v7.3.5
-- MUI X Data Grid v8.17.0
-- MUI X Charts v8.17.0
-- MUI X Date Pickers v8.17.0
+- Material UI (MUI) v7.3.6
+- MUI X Data Grid v8.22.0
+- MUI X Charts v8.22.0
+- MUI X Date Pickers v8.22.0
 - Emotion (CSS-in-JS)
 - Roboto font
 
 **Data & State Management:**
 
-- SWR v2.3.6 (data fetching and caching)
+- SWR v2.3.7 (data fetching and caching)
 - Formik v2.4.9 (form management)
 - Yup v1.7.1 (validation schemas)
 
 **Authentication & API:**
 
-- Auth0 (`@auth0/nextjs-auth0` v4.12.0)
+- Auth0 (`@auth0/nextjs-auth0` v4.13.2)
 - Custom server actions for API communication
 
 **Utilities:**
@@ -52,11 +52,11 @@ The application features:
 
 **Development & Testing:**
 
-- Vitest v4.0.9 (test runner)
+- Vitest v4.0.15 (test runner)
 - React Testing Library v16.3.0
-- MSW v2.12.2 (API mocking)
+- MSW v2.12.4 (API mocking)
 - ESLint v9 (linting)
-- Prettier v3.7.2 (code formatting)
+- Prettier v3.7.4 (code formatting)
 
 **Package Managers Supported:**
 
@@ -96,7 +96,7 @@ docker run -p 3000:3000 obdtrak
 ### Authentication Flow
 
 - Uses Auth0 (`@auth0/nextjs-auth0`) for authentication
-- Middleware (`middleware.ts`) protects all routes except static assets and metadata files
+- Proxy (`proxy.ts`) protects all routes except static assets and metadata files (Next.js 16 renamed middleware.ts to proxy.ts)
 - Session management is centralized in `lib/auth0.ts` with JWT token expiration checking
 - `ensureValidSession()` helper redirects to login if session is invalid or token expired
 
@@ -222,7 +222,7 @@ types/                 # TypeScript type definitions
   api.ts               # API response types (Track, Session, Car, Record interfaces)
   validations.ts       # Validation schemas
 
-middleware.ts          # Auth0 middleware for route protection
+proxy.ts               # Auth0 proxy for route protection (Next.js 16)
 theme.ts               # MUI theme configuration
 ```
 
@@ -258,7 +258,7 @@ Required in `.env.local`:
 - All new features require unit tests
 - Prefer `getByRole` > `getByLabelText` > `getByText` > `getByTestId`
 - Use `@testing-library/user-event` v14 for interactions with `await user.click(...)`
-- Mock API calls with MSW v2.12.2 (Mock Service Worker)
+- Mock API calls with MSW v2.12.4 (Mock Service Worker)
 - Mock modules with `vi.mock()` and `vi.fn()`
 - All existing tests must pass after changes
 - Test files use `.test.tsx` or `.test.ts` extension and are colocated with source files

@@ -1,6 +1,6 @@
 "use server";
 
-import { auth0, ensureValidSession } from "@/lib/auth0";
+import { auth0 } from "@/lib/auth0";
 import { ApiError } from "./api-error";
 
 type FetchOptions = {
@@ -13,8 +13,7 @@ export async function fetchWithAuth<T>(
   url: string,
   options: FetchOptions = {},
 ): Promise<T> {
-  const session = await auth0.getSession();
-  ensureValidSession(session);
+  const accessToken = await auth0.getAccessToken();
 
   const baseUrl = process.env.API_BASE_URL;
   const fullUrl = new URL(baseUrl + url);
@@ -25,7 +24,7 @@ export async function fetchWithAuth<T>(
 
   const isFormData = options.body instanceof FormData;
   const headers: Record<string, string> = {
-    Authorization: `Bearer ${session?.tokenSet.idToken}`,
+    Authorization: `Bearer ${accessToken.token}`,
   };
 
   if (!isFormData) {

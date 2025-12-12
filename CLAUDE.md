@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-OBDTrak is a track day telemetry application built with Next.js 15, TypeScript, and Material UI. The app uses Auth0 for authentication and communicates with a separate backend API to manage track day data.
+OBDTrak is a track day telemetry application built with Next.js 15, React 19, TypeScript 5, and Material UI v7. The app uses Auth0 for authentication and communicates with a separate backend API to manage track day data.
 
 The application features:
 
@@ -13,6 +13,56 @@ The application features:
 - **Track Management**: CRUD operations for race tracks with inline DataGrid editing
 - **Car Management**: Manage vehicle information for tracked sessions
 - **Session Management**: Create, edit, and view track day sessions with file upload support
+
+## Technology Stack
+
+**Core Framework & Runtime:**
+
+- Next.js 15.5.4 (App Router with Turbopack)
+- React 19.2.0
+- TypeScript 5
+- Node.js 20+ (Node.js 22 recommended)
+
+**UI & Styling:**
+
+- Material UI (MUI) v7.3.5
+- MUI X Data Grid v8.17.0
+- MUI X Charts v8.17.0
+- MUI X Date Pickers v8.17.0
+- Emotion (CSS-in-JS)
+- Roboto font
+
+**Data & State Management:**
+
+- SWR v2.3.6 (data fetching and caching)
+- Formik v2.4.9 (form management)
+- Yup v1.7.1 (validation schemas)
+
+**Authentication & API:**
+
+- Auth0 (`@auth0/nextjs-auth0` v4.12.0)
+- Custom server actions for API communication
+
+**Utilities:**
+
+- Day.js v1.11.19 (date manipulation)
+- React Dropzone v14.3.8 (file uploads)
+- Leaflet v1.9.4 & React Leaflet v5.0.0 (maps)
+- Notistack v3.0.2 (notifications)
+
+**Development & Testing:**
+
+- Vitest v4.0.9 (test runner)
+- React Testing Library v16.3.0
+- MSW v2.12.2 (API mocking)
+- ESLint v9 (linting)
+- Prettier v3.7.2 (code formatting)
+
+**Package Managers Supported:**
+
+- npm (default)
+- yarn
+- pnpm
 
 ## Development Commands
 
@@ -92,7 +142,7 @@ Analytics Page (app/analytics/page.tsx)
 - Uses `mutate()` for local cache updates without server revalidation
 - Conditional fetching supported (e.g., `useRecords(sessionId)` only fetches when sessionId is provided)
 
-**MUI DataGrid Pattern** (see `app/tracks/_components/TracksDataGrid.tsx`, `app/cars/_components/CarsDataGrid.tsx`, `app/sessions/_components/SessionsDataGrid.tsx`):
+**MUI X Data Grid v8 Pattern** (see `app/tracks/_components/TracksDataGrid.tsx`, `app/cars/_components/CarsDataGrid.tsx`, `app/sessions/_components/SessionsDataGrid.tsx`):
 
 - Inline row editing with edit/view mode toggling
 - New rows use temporary IDs (`new-${Date.now()}`) until persisted
@@ -204,19 +254,23 @@ Required in `.env.local`:
 
 **Testing Requirements**:
 
-- Use Vitest and React Testing Library
+- Use Vitest v4 and React Testing Library v16
 - All new features require unit tests
 - Prefer `getByRole` > `getByLabelText` > `getByText` > `getByTestId`
-- Use `@testing-library/user-event` for interactions with `await user.click(...)`
-- Mock with `vi.mock()` and `vi.fn()`
+- Use `@testing-library/user-event` v14 for interactions with `await user.click(...)`
+- Mock API calls with MSW v2.12.2 (Mock Service Worker)
+- Mock modules with `vi.mock()` and `vi.fn()`
 - All existing tests must pass after changes
+- Test files use `.test.tsx` or `.test.ts` extension and are colocated with source files
 
-**MUI Styling**:
+**MUI v7 Styling**:
 
 - Use `sx` prop for inline styles
 - Use `styled()` from `@mui/material/styles` for reusable components
 - No raw CSS files or Tailwind
 - Use theme object for colors, spacing, typography
+- Emotion is used as the CSS-in-JS engine
+- Material UI Next.js integration via `@mui/material-nextjs` for App Router support
 
 **Component Patterns**:
 
@@ -226,8 +280,8 @@ Required in `.env.local`:
 
 ## Important Implementation Details
 
-**New Row Pattern for DataGrid**:
-When adding new rows to MUI DataGrid with inline editing:
+**New Row Pattern for MUI X Data Grid v8**:
+When adding new rows to MUI X Data Grid with inline editing:
 
 1. Generate temporary ID: `new-${Date.now()}`
 2. Add to local cache with `mutate([newRow, ...(data || [])], false)`
@@ -240,3 +294,27 @@ The `isIdTokenExpired()` function includes a 30-second clock skew buffer. Tokens
 
 **Error Boundaries**:
 API errors use custom `ApiError` class with status code and status text. Server actions catch and log errors, then reject with user-friendly messages. Client components should handle promise rejections and display errors via Notistack snackbar.
+
+**Docker & Deployment**:
+
+- Next.js configured with `output: "standalone"` in `next.config.ts` for optimized Docker builds
+- Dockerfile uses Node.js 22 Alpine base image
+- Multi-stage build process: deps → builder → runner
+- Production image uses non-root user (nextjs:nodejs with UID 1001:GID 1001)
+- Next.js telemetry disabled in production
+- Supports npm, yarn, and pnpm package managers in Docker builds
+- Application runs on port 3000 by default
+
+**Form Management**:
+
+- Formik v2.4.9 for form state management
+- Yup v1.7.1 for validation schemas
+- See `hooks/useAddSessionForm.ts` and `hooks/useEditSessionForm.ts` for custom form hooks
+- Date pickers use MUI X Date Pickers v8 with Day.js adapter
+- File uploads use React Dropzone v14.3.8
+
+**Map Integration**:
+
+- Leaflet v1.9.4 for map rendering
+- React Leaflet v5.0.0 for React bindings
+- Used in track preview modals to display track locations

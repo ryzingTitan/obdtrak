@@ -37,23 +37,15 @@ afterAll(() => server.close());
 vi.mock("./auth0", () => ({
   auth0: {
     getSession: vi.fn(),
+    getAccessToken: vi.fn(),
   },
   ensureValidSession: vi.fn(),
 }));
 
 describe("fetchWithAuth", () => {
   beforeEach(() => {
-    vi.mocked(auth0.getSession).mockResolvedValue({
-      user: { sub: "test-user-id" },
-      tokenSet: {
-        accessToken: "test-access-token",
-        idToken: "test",
-        expiresAt: Date.now() / 1000 + 3600,
-      },
-      internal: {
-        sid: "test-session-id",
-        createdAt: Date.now() / 1000,
-      },
+    vi.mocked(auth0.getAccessToken).mockResolvedValue({
+      token: "test-access-token",
     });
   });
 

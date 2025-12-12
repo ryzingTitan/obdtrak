@@ -16,8 +16,10 @@ A track day telemetry application for recording, analyzing, and managing motorsp
 ## Tech Stack
 
 - **Framework**: Next.js 15 (App Router with Turbopack)
-- **Language**: TypeScript
-- **UI Library**: Material UI (MUI)
+- **Runtime**: React 19
+- **Language**: TypeScript 5
+- **UI Library**: Material UI v7 (MUI)
+- **Data Components**: MUI X Data Grid v8, MUI X Charts v8, MUI X Date Pickers v8
 - **Authentication**: Auth0 (`@auth0/nextjs-auth0`)
 - **Data Fetching**: SWR (React Hooks for Data Fetching)
 - **Testing**: Vitest + React Testing Library
@@ -25,8 +27,8 @@ A track day telemetry application for recording, analyzing, and managing motorsp
 
 ## Prerequisites
 
-- Node.js 18+
-- npm or yarn
+- Node.js 20+ (Node.js 22 recommended, as used in Docker image)
+- npm, yarn, or pnpm
 - Auth0 account for authentication setup
 - Backend API server running (see API_BASE_URL configuration)
 

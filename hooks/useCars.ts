@@ -6,30 +6,24 @@ import {
   GridRowModesModel,
   GridValidRowModel,
 } from "@mui/x-data-grid";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { createCar, deleteCar, getAllCars, updateCar } from "@/lib/cars";
 import { useSnackbar } from "notistack";
 
 export const useCars = () => {
   const swrKey = `/cars`;
   const { data, isLoading, mutate } = useSWR<Car[]>(swrKey, getAllCars);
-  const [rows, setRows] = useState<readonly Car[]>([]);
+  const [newRows, setNewRows] = useState<readonly Car[]>([]);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const { enqueueSnackbar } = useSnackbar();
 
-  useEffect(() => {
-    if (data) {
-      setRows((currentRows) => {
-        const newRows = currentRows.filter((r) =>
-          String(r.id).startsWith("new-"),
-        );
-        const serverRows = data;
-        const serverRowIds = new Set(serverRows.map((r) => r.id));
-        const uniqueNewRows = newRows.filter((r) => !serverRowIds.has(r.id));
-        return [...uniqueNewRows, ...serverRows];
-      });
-    }
-  }, [data]);
+  // Derive rows by merging new rows with server data
+  const rows = useMemo(() => {
+    if (!data) return newRows;
+    const serverRowIds = new Set(data.map((r) => r.id));
+    const uniqueNewRows = newRows.filter((r) => !serverRowIds.has(r.id));
+    return [...uniqueNewRows, ...data];
+  }, [data, newRows]);
 
   const handleRowModesModelChange = (newModel: GridRowModesModel) => {
     setRowModesModel(newModel);
@@ -63,7 +57,7 @@ export const useCars = () => {
       }));
 
       if (String(id).startsWith("new-")) {
-        setRows((currentRows) => currentRows.filter((row) => row.id !== id));
+        setNewRows((currentRows) => currentRows.filter((row) => row.id !== id));
       }
     },
     [],
@@ -72,15 +66,9 @@ export const useCars = () => {
   const handleDeleteClick = useCallback(
     (id: GridRowId) => async () => {
       if (String(id).startsWith("new-")) {
-        setRows((currentRows) => currentRows.filter((row) => row.id !== id));
+        setNewRows((currentRows) => currentRows.filter((row) => row.id !== id));
         return;
       }
-
-      let originalRows: readonly Car[] = [];
-      setRows((currentRows) => {
-        originalRows = currentRows;
-        return currentRows.filter((row) => row.id !== id);
-      });
 
       try {
         await deleteCar(swrKey, String(id));
@@ -91,7 +79,6 @@ export const useCars = () => {
         enqueueSnackbar("Car deleted", { variant: "success" });
       } catch (e) {
         console.error(e);
-        setRows(originalRows);
         enqueueSnackbar("Failed to delete car", { variant: "error" });
       }
     },
@@ -107,8 +94,8 @@ export const useCars = () => {
       try {
         if (String(newRow.id).startsWith("new-")) {
           const created = await createCar(swrKey, payload);
-          setRows((currentRows) =>
-            currentRows.map((row) => (row.id === newRow.id ? created : row)),
+          setNewRows((currentRows) =>
+            currentRows.filter((row) => row.id !== newRow.id),
           );
           await mutate(
             (currentData) => [created, ...(currentData || [])],
@@ -118,9 +105,6 @@ export const useCars = () => {
           return created;
         } else {
           const updated = await updateCar(swrKey, String(newRow.id), payload);
-          setRows((currentRows) =>
-            currentRows.map((row) => (row.id === updated.id ? updated : row)),
-          );
           await mutate(
             (currentData) =>
               currentData?.map((r) => (r.id === updated.id ? updated : r)),
@@ -147,7 +131,7 @@ export const useCars = () => {
       model: "",
     };
 
-    setRows((oldRows) => [newRow, ...oldRows]);
+    setNewRows((oldRows) => [newRow, ...oldRows]);
     setRowModesModel((oldModel) => ({
       ...oldModel,
       [id]: { mode: GridRowModes.Edit, fieldToFocus: "year" },

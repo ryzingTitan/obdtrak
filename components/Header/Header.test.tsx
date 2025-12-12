@@ -25,6 +25,7 @@ vi.mock("next/image", () => ({
     width: number;
     height: number;
   }) => {
+    // eslint-disable-next-line @next/next/no-img-element -- Test mock for next/image
     return <img src={src} alt={alt} width={width} height={height} />;
   },
 }));
@@ -34,12 +35,17 @@ describe("Header", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    delete (window as { location?: Location }).location;
-    window.location = { ...originalLocation, href: "" };
+    Object.defineProperty(window, "location", {
+      value: { ...originalLocation, href: "" },
+      writable: true,
+    });
   });
 
   afterEach(() => {
-    window.location = originalLocation;
+    Object.defineProperty(window, "location", {
+      value: originalLocation,
+      writable: true,
+    });
   });
 
   it("should render app logo", () => {

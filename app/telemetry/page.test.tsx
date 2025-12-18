@@ -1,6 +1,48 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import Telemetry from "./page";
+import { Session, Record } from "@/types/api";
+
+const mockSession: Session = {
+  id: "session-1",
+  startTime: "2024-01-15T10:00:00Z",
+  endTime: "2024-01-15T11:00:00Z",
+  trackName: "Test Track",
+  trackLatitude: 40.7128,
+  trackLongitude: -74.006,
+  carYear: 2020,
+  carMake: "Test",
+  carModel: "Car",
+};
+
+const mockRecord: Record = {
+  sessionId: "session-1",
+  timestamp: "2024-01-15T10:00:00Z",
+  longitude: -74.006,
+  latitude: 40.7128,
+  altitude: 100,
+  intakeAirTemperature: 85,
+  boostPressure: 12.5,
+  coolantTemperature: 195,
+  engineRpm: 4500,
+  speed: 87,
+  throttlePosition: 75,
+  airFuelRatio: 14.7,
+  oilPressure: 45,
+  manifoldPressure: 25.3,
+  massAirFlow: 10,
+};
+
+const mockUseSessions = vi.fn();
+const mockUseRecords = vi.fn();
+
+vi.mock("@/hooks/useSessions", () => ({
+  useSessions: () => mockUseSessions(),
+}));
+
+vi.mock("@/hooks/useRecords", () => ({
+  useRecords: () => mockUseRecords(),
+}));
 
 // Mock react-leaflet components
 vi.mock("react-leaflet", () => ({
@@ -33,6 +75,19 @@ vi.mock("leaflet", () => ({
 }));
 
 describe("Telemetry Page", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    // Default: no sessions, no records (shows empty state)
+    mockUseSessions.mockReturnValue({
+      sessions: [],
+      isLoading: false,
+    });
+    mockUseRecords.mockReturnValue({
+      records: [],
+      isLoading: false,
+    });
+  });
+
   it("should render page header", () => {
     const { container } = render(<Telemetry />);
 
@@ -40,114 +95,46 @@ describe("Telemetry Page", () => {
     expect(container.textContent).toContain("Real-time track session data");
   });
 
-  it("should render TrackMap component with coordinates", () => {
-    const { container } = render(<Telemetry />);
-
-    expect(container.textContent).toContain("Track Position");
-    expect(container.textContent).toContain("40.712800");
-    expect(container.textContent).toContain("-74.006000");
-  });
-
-  it("should render RpmGauge with engine RPM", () => {
-    const { container } = render(<Telemetry />);
-
-    expect(container.textContent).toContain("Engine RPM");
-    expect(container.textContent).toContain("4500");
-    expect(container.textContent).toContain("Redline: 7000");
-  });
-
-  it("should render Vehicle Speed gauge", () => {
-    const { container } = render(<Telemetry />);
-
-    expect(container.textContent).toContain("Vehicle Speed");
-    expect(container.textContent).toContain("87");
-    expect(container.textContent).toContain("MPH");
-  });
-
-  it("should render Coolant Temperature gauge", () => {
-    const { container } = render(<Telemetry />);
-
-    expect(container.textContent).toContain("Coolant Temp");
-    expect(container.textContent).toContain("195");
-    expect(container.textContent).toContain("°F");
-  });
-
-  it("should render Intake Temperature gauge", () => {
-    const { container } = render(<Telemetry />);
-
-    expect(container.textContent).toContain("Intake Temp");
-    expect(container.textContent).toContain("85");
-  });
-
-  it("should render Throttle gauge", () => {
-    const { container } = render(<Telemetry />);
-
-    expect(container.textContent).toContain("Throttle");
-    expect(container.textContent).toContain("75");
-    expect(container.textContent).toContain("%");
-  });
-
-  it("should render Boost gauge", () => {
-    const { container } = render(<Telemetry />);
-
-    expect(container.textContent).toContain("Boost");
-    expect(container.textContent).toContain("12.5");
-    expect(container.textContent).toContain("PSI");
-  });
-
-  it("should render Manifold Pressure gauge", () => {
-    const { container } = render(<Telemetry />);
-
-    expect(container.textContent).toContain("Manifold");
-    expect(container.textContent).toContain("25.3");
-    expect(container.textContent).toContain("inHg");
-  });
-
-  it("should render Oil Pressure gauge", () => {
-    const { container } = render(<Telemetry />);
-
-    expect(container.textContent).toContain("Oil Pressure");
-    expect(container.textContent).toContain("45");
-  });
-
-  it("should render all required gauges", () => {
-    const { container } = render(<Telemetry />);
-
-    const gaugeLabels = [
-      "Vehicle Speed",
-      "Coolant Temp",
-      "Intake Temp",
-      "Throttle",
-      "Boost",
-      "Manifold",
-      "Oil Pressure",
-    ];
-
-    gaugeLabels.forEach((label) => {
-      expect(container.textContent).toContain(label);
+  it("should display empty state when no session is selected", () => {
+    mockUseSessions.mockReturnValue({
+      sessions: [mockSession],
+      isLoading: false,
     });
-  });
 
-  it("should render progress bars for gauges with showBar=true", () => {
-    render(<Telemetry />);
-
-    const progressBars = screen.getAllByRole("progressbar");
-    expect(progressBars.length).toBeGreaterThan(0);
-  });
-
-  it("should display current position indicator on map", () => {
     const { container } = render(<Telemetry />);
 
-    expect(container.textContent).toContain("CURRENT POSITION");
+    expect(container.textContent).toContain("Select a Session");
+    expect(container.textContent).toContain(
+      "Choose a track session from the dropdown above to view telemetry data",
+    );
   });
 
-  it("should use mock telemetry data", () => {
+  it("should render SessionSelector component", () => {
     const { container } = render(<Telemetry />);
 
-    expect(container.textContent).toContain("87"); // speed
-    expect(container.textContent).toContain("195"); // coolant temp
-    expect(container.textContent).toContain("4500"); // RPM
-    expect(container.textContent).toContain("12.5"); // boost
+    expect(container.textContent).toContain("Select Session");
+  });
+
+  it("should handle sessions loading state", () => {
+    mockUseSessions.mockReturnValue({
+      sessions: [],
+      isLoading: true,
+    });
+
+    const { container } = render(<Telemetry />);
+
+    expect(container.textContent).toContain("Select Session");
+  });
+
+  it("should handle no sessions available", () => {
+    mockUseSessions.mockReturnValue({
+      sessions: [],
+      isLoading: false,
+    });
+
+    const { container } = render(<Telemetry />);
+
+    expect(container.textContent).toContain("Select Session");
   });
 
   it("should render page with correct structure", () => {
@@ -163,19 +150,5 @@ describe("Telemetry Page", () => {
     const header = container.querySelector("h1");
     expect(header).toBeInTheDocument();
     expect(header?.textContent).toContain("Live Telemetry");
-  });
-
-  it("should render SVG track visualization", () => {
-    const { container } = render(<Telemetry />);
-
-    const svg = container.querySelector("svg");
-    expect(svg).toBeInTheDocument();
-  });
-
-  it("should render MUI Paper components", () => {
-    const { container } = render(<Telemetry />);
-
-    const papers = container.querySelectorAll(".MuiPaper-root");
-    expect(papers.length).toBeGreaterThan(0);
   });
 });

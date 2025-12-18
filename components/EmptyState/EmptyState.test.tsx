@@ -16,13 +16,13 @@ describe("EmptyState", () => {
     const { container } = render(
       <EmptyState
         title="No Sessions Available"
-        message="Create a track session to view analytics data"
+        message="Create a track session to view data"
       />,
     );
 
     expect(container.textContent).toContain("No Sessions Available");
     expect(container.textContent).toContain(
-      "Create a track session to view analytics data",
+      "Create a track session to view data",
     );
   });
 

@@ -292,4 +292,16 @@ describe("Analytics Page", () => {
     ).toBeInTheDocument();
     expect(within(grid).getByText("Mass Air Flow (G/S)")).toBeInTheDocument();
   });
+
+  it("should display empty state message when no session is selected", () => {
+    render(<Analytics />);
+
+    expect(screen.getByText("Select a Session")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Choose a track session from the dropdown above to view analytics",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
+  });
 });

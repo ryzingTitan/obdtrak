@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import Telemetry from "./page";
 import { Session, Record } from "@/types/api";
 
@@ -88,13 +89,6 @@ describe("Telemetry Page", () => {
     });
   });
 
-  it("should render page header", () => {
-    const { container } = render(<Telemetry />);
-
-    expect(container.textContent).toContain("Live Telemetry");
-    expect(container.textContent).toContain("Real-time track session data");
-  });
-
   it("should display empty state when no session is selected", () => {
     mockUseSessions.mockReturnValue({
       sessions: [mockSession],
@@ -112,7 +106,7 @@ describe("Telemetry Page", () => {
   it("should render SessionSelector component", () => {
     const { container } = render(<Telemetry />);
 
-    expect(container.textContent).toContain("Select Session");
+    expect(container.textContent).toContain("Session");
   });
 
   it("should handle sessions loading state", () => {
@@ -123,7 +117,7 @@ describe("Telemetry Page", () => {
 
     const { container } = render(<Telemetry />);
 
-    expect(container.textContent).toContain("Select Session");
+    expect(container.textContent).toContain("Session");
   });
 
   it("should handle no sessions available", () => {
@@ -134,7 +128,7 @@ describe("Telemetry Page", () => {
 
     const { container } = render(<Telemetry />);
 
-    expect(container.textContent).toContain("Select Session");
+    expect(container.textContent).toContain("Session");
   });
 
   it("should render page with correct structure", () => {
@@ -144,11 +138,59 @@ describe("Telemetry Page", () => {
     expect(pageContainer).toBeInTheDocument();
   });
 
-  it("should render header with heading role", () => {
+  it("should display sessions ordered by start time descending", async () => {
+    const mockSessions: Session[] = [
+      {
+        id: "1",
+        startTime: "2024-01-15T10:00:00Z",
+        endTime: "2024-01-15T11:00:00Z",
+        trackName: "Laguna Seca",
+        trackLatitude: 36.5811,
+        trackLongitude: -121.7536,
+        carYear: 2020,
+        carMake: "Toyota",
+        carModel: "Camry",
+      },
+      {
+        id: "2",
+        startTime: "2024-01-16T14:00:00Z",
+        endTime: "2024-01-16T15:30:00Z",
+        trackName: "Circuit of the Americas",
+        trackLatitude: 30.1328,
+        trackLongitude: -97.6411,
+        carYear: 2021,
+        carMake: "Honda",
+        carModel: "Civic",
+      },
+      {
+        id: "3",
+        startTime: "2024-01-10T09:00:00Z",
+        endTime: "2024-01-10T10:30:00Z",
+        trackName: "Watkins Glen",
+        trackLatitude: 42.3369,
+        trackLongitude: -76.9275,
+        carYear: 2019,
+        carMake: "Ford",
+        carModel: "Mustang",
+      },
+    ];
+
+    mockUseSessions.mockReturnValue({
+      sessions: mockSessions,
+      isLoading: false,
+    });
+
+    const user = userEvent.setup();
     const { container } = render(<Telemetry />);
 
-    const header = container.querySelector("h1");
-    expect(header).toBeInTheDocument();
-    expect(header?.textContent).toContain("Live Telemetry");
+    const autocomplete = container.querySelector('input[role="combobox"]');
+    expect(autocomplete).toBeInTheDocument();
+    await user.click(autocomplete!);
+
+    // The first option should be the session with the latest startTime (2024-01-16)
+    const options = screen.getAllByRole("option");
+    expect(options[0]).toHaveTextContent("Circuit of the Americas");
+    expect(options[1]).toHaveTextContent("Laguna Seca");
+    expect(options[2]).toHaveTextContent("Watkins Glen");
   });
 });

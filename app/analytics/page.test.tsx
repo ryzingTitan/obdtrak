@@ -125,18 +125,18 @@ describe("Analytics Page", () => {
     expect(options[2]).toHaveTextContent("Watkins Glen");
   });
 
-  it("should format session labels as trackName: startTime - endTime", async () => {
+  it("should format session labels as trackName: startTime (carYear carMake carModel)", async () => {
     const user = userEvent.setup();
     render(<Analytics />);
 
     const autocomplete = screen.getByRole("combobox");
     await user.click(autocomplete);
 
-    // Check that the label format includes trackName and formatted dates
-    // The format should be: trackName: MM-DD-YYYY h:mm A - MM-DD-YYYY h:mm A
+    // Check that the label format includes trackName, formatted date, and car info
+    // The format should be: trackName: M/D/YYYY h:mm A (carYear carMake carModel)
     expect(
       screen.getByText(
-        /Circuit of the Americas: 01-16-2024 \d{1,2}:\d{2} [AP]M - 01-16-2024 \d{1,2}:\d{2} [AP]M/i,
+        /Circuit of the Americas: 1\/16\/2024 \d{1,2}:\d{2} [AP]M \(2021 Honda Civic\)/i,
       ),
     ).toBeInTheDocument();
   });

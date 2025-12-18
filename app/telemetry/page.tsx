@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { Box } from "@mui/material";
-import { TrackMap } from "./_components/TrackMap";
 import { getTempColor } from "./_components/telemetryUtils";
 import { useSessions } from "@/hooks/useSessions";
 import { useRecords } from "@/hooks/useRecords";
 import { Session } from "@/types/api";
 import { EmptyState } from "@/components/EmptyState/EmptyState";
-import { SessionSelector } from "./_components/SessionSelector";
+import SessionSelector from "@/components/SessionSelector/SessionSelector";
 import {
   PlaybackControls,
   type PlaybackSpeed,
@@ -18,7 +18,13 @@ import {
   GAUGE_LIMITS,
   type TelemetryData,
 } from "./_components/TelemetryGauges";
-import { PageHeader } from "./_components/PageHeader";
+
+// Dynamically import TrackMap to avoid SSR issues with Leaflet
+const TrackMap = dynamic(
+  () =>
+    import("./_components/TrackMap").then((mod) => ({ default: mod.TrackMap })),
+  { ssr: false },
+);
 
 export default function Telemetry() {
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
@@ -30,6 +36,12 @@ export default function Telemetry() {
   const { records, isLoading: recordsLoading } = useRecords(
     selectedSession?.id || null,
   );
+
+  const sortedSessions = useMemo(() => {
+    return [...sessions].sort((a, b) => {
+      return new Date(b.startTime).getTime() - new Date(a.startTime).getTime();
+    });
+  }, [sessions]);
 
   // Playback interval - update based on playback speed
   useEffect(() => {
@@ -141,15 +153,12 @@ export default function Telemetry() {
     setIsPlaying(false);
   }, []);
 
-  const handleSessionChange = useCallback(
-    (_event: React.SyntheticEvent, newValue: Session | null) => {
-      setSelectedSession(newValue);
-      // Reset playback when session changes
-      setCurrentRecordIndex(0);
-      setIsPlaying(false);
-    },
-    [],
-  );
+  const handleSessionChange = useCallback((newValue: Session | null) => {
+    setSelectedSession(newValue);
+    // Reset playback when session changes
+    setCurrentRecordIndex(0);
+    setIsPlaying(false);
+  }, []);
 
   const handleSpeedChange = useCallback(
     (_event: React.MouseEvent<HTMLElement>, newSpeed: PlaybackSpeed | null) => {
@@ -170,10 +179,6 @@ export default function Telemetry() {
         backgroundColor: "#0a0a0a",
       }}
     >
-      <PageHeader
-        title="Live Telemetry"
-        subtitle="Real-time track session data"
-      />
       {children}
     </Box>
   );
@@ -181,7 +186,7 @@ export default function Telemetry() {
   return (
     <PageLayout>
       <SessionSelector
-        sessions={sessions}
+        sessions={sortedSessions}
         selectedSession={selectedSession}
         onSessionChange={handleSessionChange}
         loading={sessionsLoading}

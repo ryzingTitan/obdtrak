@@ -18,9 +18,8 @@ export default function SessionSelector({
   loading = false,
 }: SessionSelectorProps) {
   const getSessionLabel = (session: Session) => {
-    const startTime = dayjs(session.startTime).format("MM-DD-YYYY h:mm A");
-    const endTime = dayjs(session.endTime).format("MM-DD-YYYY h:mm A");
-    return `${session.trackName}: ${startTime} - ${endTime}`;
+    const startTime = dayjs(session.startTime).format("M/D/YYYY h:mm A");
+    return `${session.trackName}: ${startTime} (${session.carYear} ${session.carMake} ${session.carModel})`;
   };
 
   return (
@@ -32,7 +31,7 @@ export default function SessionSelector({
         onChange={(_event, newValue) => onSessionChange(newValue)}
         loading={loading}
         renderInput={(params) => (
-          <TextField {...params} label="Select Session" variant="outlined" />
+          <TextField {...params} label="Session" variant="outlined" />
         )}
         isOptionEqualToValue={(option, value) => option.id === value.id}
       />

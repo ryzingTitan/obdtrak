@@ -13,7 +13,7 @@ import BoostChart from "./_components/BoostChart";
 import ThrottleChart from "./_components/ThrottleChart";
 import SpeedChart from "./_components/SpeedChart";
 import OilPressureChart from "./_components/OilPressureChart";
-import { EmptyState } from "./_components/EmptyState";
+import { EmptyState } from "@/components/EmptyState/EmptyState";
 
 export default function Analytics() {
   const { sessions, isLoading: sessionsLoading } = useSessions();

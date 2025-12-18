@@ -7,7 +7,7 @@ import { getTempColor } from "./_components/telemetryUtils";
 import { useSessions } from "@/hooks/useSessions";
 import { useRecords } from "@/hooks/useRecords";
 import { Session } from "@/types/api";
-import { EmptyState } from "./_components/EmptyState";
+import { EmptyState } from "@/components/EmptyState/EmptyState";
 import { SessionSelector } from "./_components/SessionSelector";
 import {
   PlaybackControls,
@@ -178,32 +178,6 @@ export default function Telemetry() {
     </Box>
   );
 
-  // Early return: Loading state for sessions
-  if (sessionsLoading) {
-    return (
-      <PageLayout>
-        <SessionSelector
-          sessions={[]}
-          selectedSession={null}
-          onSessionChange={handleSessionChange}
-          loading={true}
-        />
-      </PageLayout>
-    );
-  }
-
-  // Early return: No sessions available
-  if (!sessionsLoading && sessions.length === 0) {
-    return (
-      <PageLayout>
-        <EmptyState
-          title="No Sessions Found"
-          message="Create a track session to view telemetry data"
-        />
-      </PageLayout>
-    );
-  }
-
   return (
     <PageLayout>
       <SessionSelector
@@ -218,19 +192,6 @@ export default function Telemetry() {
         <EmptyState
           title="Select a Session"
           message="Choose a track session from the dropdown above to view telemetry data"
-        />
-      )}
-
-      {/* Loading state: Records loading */}
-      {selectedSession && recordsLoading && (
-        <EmptyState title="Loading telemetry data..." message="" />
-      )}
-
-      {/* Empty state: No records in session */}
-      {selectedSession && !recordsLoading && records.length === 0 && (
-        <EmptyState
-          title="No Telemetry Data"
-          message="This session does not have any telemetry records"
         />
       )}
 

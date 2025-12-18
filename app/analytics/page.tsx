@@ -5,7 +5,7 @@ import { useSessions } from "@/hooks/useSessions";
 import { useRecords } from "@/hooks/useRecords";
 import { Session } from "@/types/api";
 import { useMemo, useState } from "react";
-import SessionSelector from "./_components/SessionSelector";
+import SessionSelector from "@/components/SessionSelector/SessionSelector";
 import AnalyticsTabs from "./_components/AnalyticsTabs";
 import SummaryTab from "./_components/SummaryTab";
 import TemperatureChart from "./_components/TemperatureChart";

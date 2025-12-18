@@ -51,7 +51,7 @@ describe("SessionSelector", () => {
     cleanup();
   });
 
-  it("should render with label 'Select Session'", () => {
+  it("should render with label 'Session'", () => {
     render(
       <SessionSelector
         sessions={mockSessions}
@@ -60,7 +60,7 @@ describe("SessionSelector", () => {
       />,
     );
 
-    expect(screen.getByLabelText("Select Session")).toBeInTheDocument();
+    expect(screen.getByLabelText("Session")).toBeInTheDocument();
   });
 
   it("should render autocomplete input", () => {
@@ -72,7 +72,7 @@ describe("SessionSelector", () => {
       />,
     );
 
-    const input = screen.getByRole("combobox", { name: "Select Session" });
+    const input = screen.getByRole("combobox", { name: "Session" });
     expect(input).toBeInTheDocument();
   });
 
@@ -86,7 +86,7 @@ describe("SessionSelector", () => {
       />,
     );
 
-    const input = screen.getByRole("combobox", { name: "Select Session" });
+    const input = screen.getByRole("combobox", { name: "Session" });
     await user.click(input);
 
     const listbox = await screen.findByRole("listbox");
@@ -104,7 +104,7 @@ describe("SessionSelector", () => {
       />,
     );
 
-    const input = screen.getByRole("combobox", { name: "Select Session" });
+    const input = screen.getByRole("combobox", { name: "Session" });
     await user.click(input);
 
     const listbox = await screen.findByRole("listbox");
@@ -125,7 +125,7 @@ describe("SessionSelector", () => {
       />,
     );
 
-    const input = screen.getByRole("combobox", { name: "Select Session" });
+    const input = screen.getByRole("combobox", { name: "Session" });
     await user.click(input);
 
     const listbox = await screen.findByRole("listbox");
@@ -146,7 +146,7 @@ describe("SessionSelector", () => {
       />,
     );
 
-    const input = screen.getByRole("combobox", { name: "Select Session" });
+    const input = screen.getByRole("combobox", { name: "Session" });
     await user.click(input);
 
     const listbox = await screen.findByRole("listbox");
@@ -175,7 +175,7 @@ describe("SessionSelector", () => {
       />,
     );
 
-    const input = screen.getByRole("combobox", { name: "Select Session" });
+    const input = screen.getByRole("combobox", { name: "Session" });
     const inputValue = input.getAttribute("value");
     expect(inputValue).toContain("Circuit of the Americas:");
   });
@@ -189,7 +189,7 @@ describe("SessionSelector", () => {
       />,
     );
 
-    const input = screen.getByRole("combobox", { name: "Select Session" });
+    const input = screen.getByRole("combobox", { name: "Session" });
     expect(input).toBeInTheDocument();
     expect(input).toHaveValue("");
   });
@@ -221,7 +221,7 @@ describe("SessionSelector", () => {
       />,
     );
 
-    const input = screen.getByRole("combobox", { name: "Select Session" });
+    const input = screen.getByRole("combobox", { name: "Session" });
     expect(input).toBeInTheDocument();
   });
 
@@ -234,7 +234,7 @@ describe("SessionSelector", () => {
       />,
     );
 
-    const input = screen.getByRole("combobox", { name: "Select Session" });
+    const input = screen.getByRole("combobox", { name: "Session" });
     expect(input).toBeInTheDocument();
   });
 
@@ -248,7 +248,7 @@ describe("SessionSelector", () => {
       />,
     );
 
-    const input = screen.getByRole("combobox", { name: "Select Session" });
+    const input = screen.getByRole("combobox", { name: "Session" });
 
     // Select first session
     await user.click(input);
@@ -287,7 +287,7 @@ describe("SessionSelector", () => {
       />,
     );
 
-    const input = screen.getByRole("combobox", { name: "Select Session" });
+    const input = screen.getByRole("combobox", { name: "Session" });
     await user.type(input, "Laguna");
 
     const listbox = await screen.findByRole("listbox");
@@ -308,7 +308,7 @@ describe("SessionSelector", () => {
       />,
     );
 
-    const input = screen.getByRole("combobox", { name: "Select Session" });
+    const input = screen.getByRole("combobox", { name: "Session" });
     await user.type(input, "NonExistentTrack");
 
     const noOptions = await screen.findByText("No options");
@@ -335,7 +335,7 @@ describe("SessionSelector", () => {
       />,
     );
 
-    const input = screen.getByRole("combobox", { name: "Select Session" });
+    const input = screen.getByRole("combobox", { name: "Session" });
     await user.click(input);
 
     const listbox = await screen.findByRole("listbox");
@@ -352,7 +352,7 @@ describe("SessionSelector", () => {
       />,
     );
 
-    const input = screen.getByRole("combobox", { name: "Select Session" });
+    const input = screen.getByRole("combobox", { name: "Session" });
     let inputValue = input.getAttribute("value");
     expect(inputValue).toContain("Laguna Seca:");
 

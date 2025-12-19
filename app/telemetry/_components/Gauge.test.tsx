@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import { Gauge } from "./Gauge";
-import SpeedIcon from "@mui/icons-material/Speed";
 
 describe("Gauge", () => {
   it("should render label text", () => {
@@ -36,19 +35,6 @@ describe("Gauge", () => {
 
     expect(container.textContent).toContain("195");
     expect(container.textContent).not.toContain("195.0");
-  });
-
-  it("should render icon when provided", () => {
-    render(
-      <Gauge
-        label="Speed"
-        value={87}
-        unit="MPH"
-        icon={<SpeedIcon data-testid="speed-icon" />}
-      />,
-    );
-
-    expect(screen.getByTestId("speed-icon")).toBeInTheDocument();
   });
 
   it("should render progress bar when showBar is true", () => {

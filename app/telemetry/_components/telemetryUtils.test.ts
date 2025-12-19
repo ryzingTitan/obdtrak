@@ -3,25 +3,25 @@ import { getTempColor, getRpmColor } from "./telemetryUtils";
 
 describe("telemetryUtils", () => {
   describe("getTempColor", () => {
-    it("should return green for safe temperature (below 70% of max)", () => {
+    it("should return green for safe temperature (below 85% of max)", () => {
       const result = getTempColor(150, 220);
       expect(result).toBe("#4caf50");
     });
 
-    it("should return orange for warm temperature (70-85% of max)", () => {
-      const result = getTempColor(160, 220);
+    it("should return orange for warm temperature (85-90% of max)", () => {
+      const result = getTempColor(190, 220);
       expect(result).toBe("#ff9800");
     });
 
-    it("should return red for hot temperature (above 85% of max)", () => {
-      const result = getTempColor(190, 220);
+    it("should return red for hot temperature (above 90% of max)", () => {
+      const result = getTempColor(200, 220);
       expect(result).toBe("#f44336");
     });
 
     it("should use default max of 220 when not provided", () => {
       const safeTemp = getTempColor(150);
-      const warmTemp = getTempColor(160);
-      const hotTemp = getTempColor(190);
+      const warmTemp = getTempColor(190);
+      const hotTemp = getTempColor(200);
 
       expect(safeTemp).toBe("#4caf50");
       expect(warmTemp).toBe("#ff9800");
@@ -30,13 +30,13 @@ describe("telemetryUtils", () => {
 
     it("should handle edge cases at threshold boundaries", () => {
       const max = 220;
-      const threshold70 = max * 0.7; // 154
       const threshold85 = max * 0.85; // 187
+      const threshold90 = max * 0.9; // 198
 
-      expect(getTempColor(threshold70 - 1, max)).toBe("#4caf50");
-      expect(getTempColor(threshold70, max)).toBe("#ff9800");
-      expect(getTempColor(threshold85 - 1, max)).toBe("#ff9800");
-      expect(getTempColor(threshold85, max)).toBe("#f44336");
+      expect(getTempColor(threshold85 - 1, max)).toBe("#4caf50");
+      expect(getTempColor(threshold85, max)).toBe("#ff9800");
+      expect(getTempColor(threshold90 - 1, max)).toBe("#ff9800");
+      expect(getTempColor(threshold90, max)).toBe("#f44336");
     });
   });
 

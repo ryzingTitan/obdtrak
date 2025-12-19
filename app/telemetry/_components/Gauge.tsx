@@ -9,7 +9,6 @@ interface GaugeProps {
   max?: number;
   showBar?: boolean;
   color?: string;
-  icon?: React.ReactNode;
 }
 
 export function Gauge({
@@ -20,7 +19,6 @@ export function Gauge({
   max = 100,
   showBar = false,
   color = "#1976d2",
-  icon,
 }: GaugeProps) {
   const percentage = ((value - min) / (max - min)) * 100;
 
@@ -35,20 +33,17 @@ export function Gauge({
       }}
     >
       <Stack spacing={1.5}>
-        <Stack direction="row" alignItems="center" spacing={1}>
-          {icon && <Box sx={{ color: "text.secondary" }}>{icon}</Box>}
-          <Typography
-            variant="caption"
-            sx={{
-              textTransform: "uppercase",
-              letterSpacing: 1.2,
-              color: "text.secondary",
-              fontWeight: 500,
-            }}
-          >
-            {label}
-          </Typography>
-        </Stack>
+        <Typography
+          variant="caption"
+          sx={{
+            textTransform: "uppercase",
+            letterSpacing: 1.2,
+            color: "text.secondary",
+            fontWeight: 500,
+          }}
+        >
+          {label}
+        </Typography>
 
         <Typography
           variant="h3"

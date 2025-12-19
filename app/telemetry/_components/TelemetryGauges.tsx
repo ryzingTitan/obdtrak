@@ -24,8 +24,6 @@ const GAUGE_LIMITS = {
   OIL_PRESSURE_WARNING_THRESHOLD: 20,
 } as const;
 
-const ENGINE_REDLINE = 7000;
-
 interface TelemetryData {
   coolantTemperature: number;
   intakeAirTemperature: number;
@@ -68,7 +66,7 @@ export function TelemetryGauges({
     >
       {/* RPM - Prominent circular gauge - spans 2 columns on desktop */}
       <Box sx={{ gridColumn: { xs: "span 2", sm: "span 1", md: "span 2" } }}>
-        <RpmGauge rpm={telemetry.engineRpm} redline={ENGINE_REDLINE} />
+        <RpmGauge rpm={telemetry.engineRpm} />
       </Box>
 
       {/* Speed - Large display - spans 2 columns on desktop */}
@@ -180,5 +178,5 @@ export function TelemetryGauges({
   );
 }
 
-export { GAUGE_LIMITS, ENGINE_REDLINE };
+export { GAUGE_LIMITS };
 export type { TelemetryData };

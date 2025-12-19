@@ -41,25 +41,25 @@ describe("telemetryUtils", () => {
   });
 
   describe("getRpmColor", () => {
-    it("should return green for safe RPM (below 70% of redline)", () => {
-      const result = getRpmColor(4000, 7000);
+    it("should return green for safe RPM (below 85% of redline)", () => {
+      const result = getRpmColor(4000, 6000);
       expect(result).toBe("#4caf50");
     });
 
-    it("should return orange for elevated RPM (70-90% of redline)", () => {
-      const result = getRpmColor(5500, 7000);
+    it("should return orange for elevated RPM (85% to below redline)", () => {
+      const result = getRpmColor(5500, 6000);
       expect(result).toBe("#ff9800");
     });
 
-    it("should return red for high RPM (above 90% of redline)", () => {
-      const result = getRpmColor(6500, 7000);
+    it("should return red for high RPM (at or above redline)", () => {
+      const result = getRpmColor(6000, 6000);
       expect(result).toBe("#f44336");
     });
 
-    it("should use default redline of 7000 when not provided", () => {
+    it("should use default redline of 6000 when not provided", () => {
       const safeRpm = getRpmColor(4000);
       const elevatedRpm = getRpmColor(5500);
-      const highRpm = getRpmColor(6500);
+      const highRpm = getRpmColor(6000);
 
       expect(safeRpm).toBe("#4caf50");
       expect(elevatedRpm).toBe("#ff9800");
@@ -67,21 +67,20 @@ describe("telemetryUtils", () => {
     });
 
     it("should handle edge cases at threshold boundaries", () => {
-      const redline = 7000;
-      const threshold70 = redline * 0.7; // 4900
-      const threshold90 = redline * 0.9; // 6300
+      const redline = 6000;
+      const threshold85 = redline * 0.85; // 5100
 
-      expect(getRpmColor(threshold70 - 1, redline)).toBe("#4caf50");
-      expect(getRpmColor(threshold70, redline)).toBe("#ff9800");
-      expect(getRpmColor(threshold90 - 1, redline)).toBe("#ff9800");
-      expect(getRpmColor(threshold90, redline)).toBe("#f44336");
+      expect(getRpmColor(threshold85 - 1, redline)).toBe("#4caf50");
+      expect(getRpmColor(threshold85, redline)).toBe("#ff9800");
+      expect(getRpmColor(redline - 1, redline)).toBe("#ff9800");
+      expect(getRpmColor(redline, redline)).toBe("#f44336");
     });
 
     it("should handle different redline values", () => {
       const lowRedline = 5000;
       expect(getRpmColor(3000, lowRedline)).toBe("#4caf50");
-      expect(getRpmColor(4000, lowRedline)).toBe("#ff9800");
-      expect(getRpmColor(4700, lowRedline)).toBe("#f44336");
+      expect(getRpmColor(4250, lowRedline)).toBe("#ff9800"); // 85% of 5000
+      expect(getRpmColor(5000, lowRedline)).toBe("#f44336"); // at redline
     });
   });
 });

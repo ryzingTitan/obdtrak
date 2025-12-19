@@ -1,15 +1,15 @@
-import { Box, Paper, Typography, Stack, Chip } from "@mui/material";
+import { Paper, Typography, Stack, Chip, Box } from "@mui/material";
+import { Gauge, gaugeClasses } from "@mui/x-charts/Gauge";
 import { getRpmColor } from "./telemetryUtils";
 
-// Circular RPM gauge component
+// RPM gauge component using MUI X Charts Gauge
 interface RpmGaugeProps {
   rpm: number;
-  redline?: number;
 }
 
-export function RpmGauge({ rpm, redline = 7000 }: RpmGaugeProps) {
-  const percentage = (rpm / redline) * 100;
-  const color = getRpmColor(rpm, redline);
+export function RpmGauge({ rpm }: RpmGaugeProps) {
+  const REDLINE = 6000;
+  const color = getRpmColor(rpm, REDLINE);
 
   return (
     <Paper
@@ -21,91 +21,74 @@ export function RpmGauge({ rpm, redline = 7000 }: RpmGaugeProps) {
         border: "1px solid rgba(255, 255, 255, 0.1)",
       }}
     >
-      <Stack spacing={2} alignItems="center">
-        <Typography
-          variant="caption"
-          sx={{
-            textTransform: "uppercase",
-            letterSpacing: 1.2,
-            color: "text.secondary",
-            fontWeight: 500,
-          }}
-        >
-          Engine RPM
-        </Typography>
-
-        {/* Circular RPM indicator */}
+      <Stack spacing={1} alignItems="center">
         <Box
           sx={{
-            position: "relative",
-            width: 140,
-            height: 140,
             display: "flex",
+            justifyContent: "space-between",
             alignItems: "center",
-            justifyContent: "center",
+            width: "100%",
           }}
         >
-          {/* Background circle */}
-          <Box
+          <Typography
+            variant="caption"
             sx={{
-              position: "absolute",
-              width: "100%",
-              height: "100%",
-              borderRadius: "50%",
-              border: "8px solid rgba(255, 255, 255, 0.1)",
+              textTransform: "uppercase",
+              letterSpacing: 1.2,
+              color: "text.secondary",
+              fontWeight: 500,
+            }}
+          >
+            Engine RPM
+          </Typography>
+
+          <Chip
+            label={`Redline: ${REDLINE}`}
+            size="small"
+            sx={{
+              backgroundColor: "rgba(244, 67, 54, 0.2)",
+              color: "#f44336",
+              fontFamily: "monospace",
+              fontSize: "0.7rem",
             }}
           />
-
-          {/* Progress arc */}
-          <Box
-            sx={{
-              position: "absolute",
-              width: "100%",
-              height: "100%",
-              borderRadius: "50%",
-              border: "8px solid transparent",
-              borderTopColor: color,
-              borderRightColor: percentage > 25 ? color : "transparent",
-              borderBottomColor: percentage > 50 ? color : "transparent",
-              borderLeftColor: percentage > 75 ? color : "transparent",
-              transform: `rotate(${-90 + percentage * 3.6 * 0.75}deg)`,
-              transition: "all 0.3s ease",
-            }}
-          />
-
-          {/* Center value */}
-          <Stack alignItems="center" spacing={0}>
-            <Typography
-              variant="h3"
-              sx={{
-                fontFamily: "monospace",
-                fontWeight: 700,
-                color: color,
-                lineHeight: 1,
-              }}
-            >
-              {rpm}
-            </Typography>
-            <Typography
-              variant="caption"
-              sx={{ color: "text.secondary", fontFamily: "monospace" }}
-            >
-              RPM
-            </Typography>
-          </Stack>
         </Box>
 
-        {/* Redline indicator */}
-        <Chip
-          label={`Redline: ${redline}`}
-          size="small"
+        <Gauge
+          skipAnimation
+          width={240}
+          height={180}
+          value={rpm}
+          valueMin={0}
+          valueMax={REDLINE + 1000}
+          startAngle={-90}
+          endAngle={90}
+          innerRadius="65%"
+          outerRadius="95%"
+          aria-label="Engine RPM gauge"
+          text={({ value }) => String(value)}
           sx={{
-            backgroundColor: "rgba(244, 67, 54, 0.2)",
-            color: "#f44336",
-            fontFamily: "monospace",
-            fontSize: "0.7rem",
+            [`& .${gaugeClasses.valueArc}`]: {
+              fill: color,
+            },
+            [`& .${gaugeClasses.referenceArc}`]: {
+              fill: "rgba(255, 255, 255, 0.1)",
+            },
+            [`& .${gaugeClasses.valueText}`]: {
+              fontSize: 40,
+              fontFamily: "monospace",
+              fontWeight: 700,
+              fill: color,
+            },
           }}
         />
+
+        <Typography
+          variant="caption"
+          sx={{ color: "text.secondary", fontFamily: "monospace", mt: -1 }}
+        >
+          RPM
+        </Typography>
       </Stack>
     </Paper>
   );

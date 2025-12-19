@@ -4,8 +4,8 @@ import userEvent from "@testing-library/user-event";
 import { PlaybackControls } from "./PlaybackControls";
 
 const mockRecord = {
-  id: 1,
-  sessionId: 1,
+  id: "1",
+  sessionId: "1",
   timestamp: "2024-01-15T10:30:00Z",
   coolantTemperature: 195,
   intakeAirTemperature: 85,
@@ -17,6 +17,9 @@ const mockRecord = {
   oilPressure: 40,
   latitude: 0,
   longitude: 0,
+  altitude: 100,
+  airFuelRatio: null,
+  massAirFlow: null,
 };
 
 describe("PlaybackControls", () => {

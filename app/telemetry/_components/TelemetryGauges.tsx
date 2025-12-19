@@ -1,22 +1,19 @@
 import { Box } from "@mui/material";
-import SpeedIcon from "@mui/icons-material/Speed";
-import ThermostatIcon from "@mui/icons-material/Thermostat";
-import LocalGasStationIcon from "@mui/icons-material/LocalGasStation";
 import { Gauge } from "./Gauge";
 import { RpmGauge } from "./RpmGauge";
 
 // Constants for gauge limits and thresholds
 const GAUGE_LIMITS = {
   COOLANT_TEMP_MIN: 100,
-  COOLANT_TEMP_MAX: 220,
+  COOLANT_TEMP_MAX: 240,
   INTAKE_TEMP_MIN: 40,
-  INTAKE_TEMP_MAX: 120,
+  INTAKE_TEMP_MAX: 150,
   SPEED_MIN: 0,
   SPEED_MAX: 150,
   THROTTLE_MIN: 0,
   THROTTLE_MAX: 100,
   BOOST_MIN: 0,
-  BOOST_MAX: 20,
+  BOOST_MAX: 30,
   MANIFOLD_MIN: 0,
   MANIFOLD_MAX: 30,
   OIL_PRESSURE_MIN: 0,
@@ -79,7 +76,6 @@ export function TelemetryGauges({
           max={GAUGE_LIMITS.SPEED_MAX}
           showBar={true}
           color="#1976d2"
-          icon={<SpeedIcon />}
         />
       </Box>
 
@@ -93,7 +89,6 @@ export function TelemetryGauges({
           max={GAUGE_LIMITS.COOLANT_TEMP_MAX}
           showBar={true}
           color={coolantColor}
-          icon={<ThermostatIcon />}
         />
       </Box>
 
@@ -107,7 +102,6 @@ export function TelemetryGauges({
           max={GAUGE_LIMITS.INTAKE_TEMP_MAX}
           showBar={true}
           color={intakeColor}
-          icon={<ThermostatIcon />}
         />
       </Box>
 
@@ -120,8 +114,7 @@ export function TelemetryGauges({
           min={GAUGE_LIMITS.THROTTLE_MIN}
           max={GAUGE_LIMITS.THROTTLE_MAX}
           showBar={true}
-          color="#ff9800"
-          icon={<LocalGasStationIcon />}
+          color="#ffeb3b"
         />
       </Box>
 
@@ -146,10 +139,10 @@ export function TelemetryGauges({
           <Gauge
             label="Manifold"
             value={telemetry.manifoldPressure}
-            unit="inHg"
+            unit="PSI"
             min={GAUGE_LIMITS.MANIFOLD_MIN}
             max={GAUGE_LIMITS.MANIFOLD_MAX}
-            showBar={false}
+            showBar={true}
             color="#00bcd4"
           />
         </Box>

@@ -100,7 +100,7 @@ describe("TelemetryGauges", () => {
       <TelemetryGauges {...defaultProps} hasManifoldPressureData={true} />,
     );
 
-    expect(container.textContent).toContain("Manifold: 15 inHg");
+    expect(container.textContent).toContain("Manifold: 15 PSI");
   });
 
   it("should not render manifold pressure gauge when hasManifoldPressureData is false", () => {
@@ -138,7 +138,7 @@ describe("TelemetryGauges", () => {
     );
 
     expect(container.textContent).toContain("Boost: 5 PSI");
-    expect(container.textContent).toContain("Manifold: 15 inHg");
+    expect(container.textContent).toContain("Manifold: 15 PSI");
     expect(container.textContent).toContain("Oil Pressure: 40 PSI");
   });
 

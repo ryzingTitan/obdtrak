@@ -169,8 +169,7 @@ export default function Telemetry() {
     [],
   );
 
-  // Shared page layout wrapper
-  const PageLayout = ({ children }: { children: React.ReactNode }) => (
+  return (
     <Box
       sx={{
         p: { xs: 1, sm: 2 },
@@ -179,12 +178,6 @@ export default function Telemetry() {
         backgroundColor: "#0a0a0a",
       }}
     >
-      {children}
-    </Box>
-  );
-
-  return (
-    <PageLayout>
       <SessionSelector
         sessions={sortedSessions}
         selectedSession={selectedSession}
@@ -244,6 +237,6 @@ export default function Telemetry() {
           </Box>
         </Box>
       )}
-    </PageLayout>
+    </Box>
   );
 }

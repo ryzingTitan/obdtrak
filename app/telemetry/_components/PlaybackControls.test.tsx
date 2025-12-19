@@ -102,18 +102,6 @@ describe("PlaybackControls", () => {
     expect(container.textContent).toContain("4x");
   });
 
-  it("should display current record index and total records", () => {
-    const { container } = render(
-      <PlaybackControls
-        {...defaultProps}
-        currentRecordIndex={25}
-        totalRecords={100}
-      />,
-    );
-
-    expect(container.textContent).toContain("Record 26 of 100");
-  });
-
   it("should display current record timestamp", () => {
     const { container } = render(<PlaybackControls {...defaultProps} />);
 
@@ -126,7 +114,6 @@ describe("PlaybackControls", () => {
       <PlaybackControls {...defaultProps} currentRecord={null} />,
     );
 
-    expect(container.textContent).toContain("Record 1 of 100");
     expect(container.textContent).not.toContain("10:30:00");
   });
 

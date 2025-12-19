@@ -205,9 +205,7 @@ export default function Telemetry() {
         <PlaybackControls
           isPlaying={isPlaying}
           playbackSpeed={playbackSpeed}
-          currentRecordIndex={currentRecordIndex}
           currentRecord={currentRecord}
-          totalRecords={records.length}
           progressPercentage={progressPercentage}
           recordsLoading={recordsLoading}
           onPlayPause={handlePlayPause}

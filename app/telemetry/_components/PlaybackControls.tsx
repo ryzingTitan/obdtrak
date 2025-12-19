@@ -9,6 +9,7 @@ import {
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import ReplayIcon from "@mui/icons-material/Replay";
+import dayjs from "dayjs";
 import { Record } from "@/types/api";
 
 const PLAYBACK_SPEEDS = [1, 2, 4] as const;
@@ -17,9 +18,7 @@ type PlaybackSpeed = (typeof PLAYBACK_SPEEDS)[number];
 interface PlaybackControlsProps {
   isPlaying: boolean;
   playbackSpeed: PlaybackSpeed;
-  currentRecordIndex: number;
   currentRecord: Record | null;
-  totalRecords: number;
   progressPercentage: number;
   recordsLoading: boolean;
   onPlayPause: () => void;
@@ -33,9 +32,7 @@ interface PlaybackControlsProps {
 export function PlaybackControls({
   isPlaying,
   playbackSpeed,
-  currentRecordIndex,
   currentRecord,
-  totalRecords,
   progressPercentage,
   recordsLoading,
   onPlayPause,
@@ -50,6 +47,7 @@ export function PlaybackControls({
         backgroundColor: "rgba(255, 255, 255, 0.05)",
         borderRadius: 2,
         maxWidth: 800,
+        mx: "auto",
       }}
     >
       <Box
@@ -115,12 +113,13 @@ export function PlaybackControls({
             </ToggleButton>
           ))}
         </ToggleButtonGroup>
-        <Typography variant="body2" sx={{ ml: "auto" }}>
-          Record {currentRecordIndex + 1} of {totalRecords}
-        </Typography>
         {currentRecord && (
-          <Typography variant="body2" color="text.secondary">
-            {new Date(currentRecord.timestamp).toLocaleTimeString()}
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ ml: "auto" }}
+          >
+            {dayjs(currentRecord.timestamp).format("h:mm:ss A")}
           </Typography>
         )}
       </Box>

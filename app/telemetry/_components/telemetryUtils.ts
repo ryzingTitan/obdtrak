@@ -6,8 +6,8 @@ export const getTempColor = (temp: number, max: number = 220): string => {
 };
 
 // RPM gauge color
-export const getRpmColor = (rpm: number, redline: number = 7000): string => {
-  if (rpm < redline * 0.7) return "#4caf50";
-  if (rpm < redline * 0.9) return "#ff9800";
-  return "#f44336";
+export const getRpmColor = (rpm: number, redline: number = 6000): string => {
+  if (rpm >= redline) return "#f44336"; // Red - at or above redline
+  if (rpm >= redline * 0.85) return "#ff9800"; // Orange - 85% to redline
+  return "#4caf50"; // Green - below 85%
 };

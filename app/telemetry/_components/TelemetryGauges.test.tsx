@@ -19,10 +19,8 @@ vi.mock("./Gauge", () => ({
 }));
 
 vi.mock("./RpmGauge", () => ({
-  RpmGauge: ({ rpm, redline }: { rpm: number; redline: number }) => (
-    <div data-testid="rpm-gauge">
-      RPM: {rpm} / {redline}
-    </div>
+  RpmGauge: ({ rpm }: { rpm: number }) => (
+    <div data-testid="rpm-gauge">RPM: {rpm} / 6000</div>
   ),
 }));
 
@@ -54,7 +52,7 @@ describe("TelemetryGauges", () => {
   it("should render RPM gauge", () => {
     const { container } = render(<TelemetryGauges {...defaultProps} />);
 
-    expect(container.textContent).toContain("RPM: 3000 / 7000");
+    expect(container.textContent).toContain("RPM: 3000 / 6000");
   });
 
   it("should render speed gauge", () => {
@@ -163,6 +161,6 @@ describe("TelemetryGauges", () => {
     );
 
     expect(container.textContent).toContain("Vehicle Speed: 120 MPH");
-    expect(container.textContent).toContain("RPM: 6500 / 7000");
+    expect(container.textContent).toContain("RPM: 6500 / 6000");
   });
 });

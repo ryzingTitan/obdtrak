@@ -217,7 +217,13 @@ export default function Telemetry() {
           }}
         >
           {/* Track Map Section */}
-          <Box sx={{ flex: { xs: "1", md: "7" }, minWidth: 0 }}>
+          <Box
+            sx={{
+              flex: { xs: "initial", md: "7" },
+              height: { xs: "400px", md: "auto" },
+              minWidth: 0,
+            }}
+          >
             <TrackMap
               latitude={mapLocation.latitude}
               longitude={mapLocation.longitude}

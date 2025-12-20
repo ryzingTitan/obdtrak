@@ -37,56 +37,12 @@ describe("TrackMap", () => {
     vi.clearAllMocks();
   });
 
-  it("should render Track Position header", () => {
+  it("should display Current Vehicle Position in popup", () => {
     const { container } = render(
       <TrackMap latitude={40.7128} longitude={-74.006} />,
     );
 
-    expect(container.textContent).toContain("Track Position");
-  });
-
-  it("should display formatted latitude and longitude", () => {
-    const { container } = render(
-      <TrackMap latitude={40.7128} longitude={-74.006} />,
-    );
-
-    expect(container.textContent).toContain("40.712800");
-    expect(container.textContent).toContain("-74.006000");
-  });
-
-  it("should format coordinates to 6 decimal places", () => {
-    const { container } = render(
-      <TrackMap latitude={40.123456789} longitude={-74.987654321} />,
-    );
-
-    expect(container.textContent).toContain("40.123457");
-    expect(container.textContent).toContain("-74.987654");
-  });
-
-  it("should display CURRENT POSITION chip for valid coordinates", () => {
-    const { container } = render(
-      <TrackMap latitude={40.7128} longitude={-74.006} />,
-    );
-
-    expect(container.textContent).toContain("CURRENT POSITION");
-  });
-
-  it("should handle positive coordinates", () => {
-    const { container } = render(
-      <TrackMap latitude={51.5074} longitude={0.1278} />,
-    );
-
-    expect(container.textContent).toContain("51.507400");
-    expect(container.textContent).toContain("0.127800");
-  });
-
-  it("should handle negative coordinates", () => {
-    const { container } = render(
-      <TrackMap latitude={-33.8688} longitude={-151.2093} />,
-    );
-
-    expect(container.textContent).toContain("-33.868800");
-    expect(container.textContent).toContain("-151.209300");
+    expect(container.textContent).toContain("Current Vehicle Position");
   });
 
   it("should show no GPS message for zero coordinates", () => {

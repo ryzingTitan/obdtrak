@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Box, Paper, Typography, Chip } from "@mui/material";
-import SpeedIcon from "@mui/icons-material/Speed";
+import { Box, Paper, Typography } from "@mui/material";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -57,41 +56,17 @@ export function TrackMap({ latitude, longitude }: TrackMapProps) {
       elevation={3}
       sx={{
         height: "100%",
-        minHeight: { xs: 300, md: 500 },
+        minHeight: { xs: 400, md: 500 },
         background: "linear-gradient(145deg, #1e1e1e 0%, #2d2d2d 100%)",
         border: "1px solid rgba(255, 255, 255, 0.1)",
         position: "relative",
         overflow: "hidden",
       }}
     >
-      {/* Header */}
-      <Box
-        sx={{
-          p: 2,
-          borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-          position: "relative",
-          zIndex: 1000,
-        }}
-      >
-        <Typography
-          variant="h6"
-          sx={{
-            textTransform: "uppercase",
-            letterSpacing: 1.5,
-            fontWeight: 600,
-          }}
-        >
-          Track Position
-        </Typography>
-        <Typography variant="caption" color="text.secondary">
-          Lat: {latitude.toFixed(6)}, Lng: {longitude.toFixed(6)}
-        </Typography>
-      </Box>
-
       {/* Map */}
       <Box
         sx={{
-          height: "calc(100% - 80px)",
+          height: "100%",
           position: "relative",
         }}
       >
@@ -112,23 +87,6 @@ export function TrackMap({ latitude, longitude }: TrackMapProps) {
               </Marker>
               <MapUpdater latitude={latitude} longitude={longitude} />
             </MapContainer>
-
-            {/* Position indicator label */}
-            <Chip
-              icon={<SpeedIcon />}
-              label="CURRENT POSITION"
-              sx={{
-                position: "absolute",
-                top: 20,
-                right: 20,
-                backgroundColor: "rgba(76, 175, 80, 0.2)",
-                color: "#4caf50",
-                fontWeight: 600,
-                borderColor: "#4caf50",
-                border: "1px solid",
-                zIndex: 1000,
-              }}
-            />
           </>
         ) : (
           <Box

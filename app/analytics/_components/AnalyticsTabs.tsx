@@ -16,6 +16,8 @@ export default function AnalyticsTabs({
       <Tabs
         value={currentTab}
         onChange={(_event, newValue) => onTabChange(newValue)}
+        variant="scrollable"
+        scrollButtons="auto"
       >
         <Tab label="Summary" />
         <Tab label="Temperature" />

@@ -100,7 +100,7 @@ export default function SessionsDataGrid() {
         rows={sessions}
         columns={columns}
         loading={isLoading}
-        sx={{ mt: 2, mb: 8, mr: 2, ml: 2 }}
+        sx={{ mt: 2, mb: 14, mr: 2, ml: 2 }}
       />
       {selectedSession && (
         <EditSessionModal

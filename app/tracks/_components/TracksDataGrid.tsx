@@ -184,7 +184,7 @@ export default function TracksDataGrid() {
         slots={{
           toolbar: () => <EditToolbar onAddNew={handleAddNew} />,
         }}
-        sx={{ mt: 2, mb: 8, mr: 2, ml: 2 }}
+        sx={{ mt: 2, mb: 14, mr: 2, ml: 2 }}
         showToolbar
       />
       <TrackPreviewModal

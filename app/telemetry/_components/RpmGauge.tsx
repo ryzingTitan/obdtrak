@@ -55,7 +55,6 @@ export function RpmGauge({ rpm }: RpmGaugeProps) {
         </Box>
 
         <Gauge
-          skipAnimation
           width={240}
           height={180}
           value={rpm}

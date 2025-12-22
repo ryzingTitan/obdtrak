@@ -1,7 +1,7 @@
 import {
   Box,
   IconButton,
-  LinearProgress,
+  Slider,
   ToggleButtonGroup,
   ToggleButton,
   Typography,
@@ -19,7 +19,8 @@ interface PlaybackControlsProps {
   isPlaying: boolean;
   playbackSpeed: PlaybackSpeed;
   currentRecord: Record | null;
-  progressPercentage: number;
+  currentRecordIndex: number;
+  totalRecords: number;
   recordsLoading: boolean;
   onPlayPause: () => void;
   onReset: () => void;
@@ -27,17 +28,20 @@ interface PlaybackControlsProps {
     event: React.MouseEvent<HTMLElement>,
     newSpeed: PlaybackSpeed | null,
   ) => void;
+  onSeek: (index: number) => void;
 }
 
 export function PlaybackControls({
   isPlaying,
   playbackSpeed,
   currentRecord,
-  progressPercentage,
+  currentRecordIndex,
+  totalRecords,
   recordsLoading,
   onPlayPause,
   onReset,
   onSpeedChange,
+  onSeek,
 }: PlaybackControlsProps) {
   return (
     <Box
@@ -123,16 +127,47 @@ export function PlaybackControls({
           </Typography>
         )}
       </Box>
-      <LinearProgress
-        variant="determinate"
-        value={progressPercentage}
+      <Slider
+        value={currentRecordIndex}
+        min={0}
+        max={Math.max(0, totalRecords - 1)}
+        step={1}
+        disabled={recordsLoading || totalRecords === 0}
+        onChange={(event: Event, value: number | number[]) => {
+          // Update position during drag for live preview
+          if (typeof value === "number") {
+            onSeek(value);
+          }
+        }}
+        aria-label="Playback position"
         sx={{
           height: 8,
-          borderRadius: 4,
-          backgroundColor: "rgba(255, 255, 255, 0.1)",
-          "& .MuiLinearProgress-bar": {
+          padding: "8px 0",
+          "& .MuiSlider-thumb": {
+            height: 16,
+            width: 16,
+            backgroundColor: "#fff",
+            border: "2px solid currentColor",
+            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+            "&:hover, &.Mui-focusVisible": {
+              boxShadow: "0px 0px 0px 8px rgba(25, 118, 210, 0.16)",
+            },
+            "&.Mui-active": {
+              height: 20,
+              width: 20,
+            },
+          },
+          "& .MuiSlider-track": {
+            height: 8,
+            border: "none",
             borderRadius: 4,
             background: "linear-gradient(45deg, #1976d2 30%, #4caf50 90%)",
+          },
+          "& .MuiSlider-rail": {
+            height: 8,
+            borderRadius: 4,
+            backgroundColor: "rgba(255, 255, 255, 0.1)",
+            opacity: 1,
           },
         }}
       />

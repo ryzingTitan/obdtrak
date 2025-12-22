@@ -126,15 +126,6 @@ export default function Telemetry() {
     [telemetry.intakeAirTemperature],
   );
 
-  // Calculate progress percentage - memoized to prevent recalculation
-  const progressPercentage = useMemo(
-    () =>
-      records.length > 0
-        ? ((currentRecordIndex + 1) / records.length) * 100
-        : 0,
-    [currentRecordIndex, records.length],
-  );
-
   // Event handlers wrapped in useCallback to prevent unnecessary re-renders
   const handlePlayPause = useCallback(() => {
     if (records.length === 0) return;
@@ -169,6 +160,11 @@ export default function Telemetry() {
     [],
   );
 
+  const handleSeek = useCallback((newIndex: number) => {
+    setCurrentRecordIndex(newIndex);
+    // Playback continues automatically if isPlaying is true
+  }, []);
+
   return (
     <Box
       sx={{
@@ -199,11 +195,13 @@ export default function Telemetry() {
           isPlaying={isPlaying}
           playbackSpeed={playbackSpeed}
           currentRecord={currentRecord}
-          progressPercentage={progressPercentage}
+          currentRecordIndex={currentRecordIndex}
+          totalRecords={records.length}
           recordsLoading={recordsLoading}
           onPlayPause={handlePlayPause}
           onReset={handleReset}
           onSpeedChange={handleSpeedChange}
+          onSeek={handleSeek}
         />
       )}
 

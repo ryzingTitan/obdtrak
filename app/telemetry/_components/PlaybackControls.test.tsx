@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, fireEvent, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { PlaybackControls } from "./PlaybackControls";
 
@@ -29,15 +29,19 @@ describe("PlaybackControls", () => {
     currentRecordIndex: 0,
     currentRecord: mockRecord,
     totalRecords: 100,
-    progressPercentage: 0,
     recordsLoading: false,
     onPlayPause: vi.fn(),
     onReset: vi.fn(),
     onSpeedChange: vi.fn(),
+    onSeek: vi.fn(),
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    cleanup();
   });
 
   it("should render play icon when not playing", () => {
@@ -120,20 +124,18 @@ describe("PlaybackControls", () => {
     expect(container.textContent).not.toContain("10:30:00");
   });
 
-  it("should render progress bar", () => {
-    const { container } = render(<PlaybackControls {...defaultProps} />);
+  it("should render slider", () => {
+    render(<PlaybackControls {...defaultProps} />);
 
-    const progressBar = container.querySelector('[role="progressbar"]');
-    expect(progressBar).toBeInTheDocument();
+    const slider = screen.getByRole("slider");
+    expect(slider).toBeInTheDocument();
   });
 
-  it("should display correct progress percentage", () => {
-    const { container } = render(
-      <PlaybackControls {...defaultProps} progressPercentage={50} />,
-    );
+  it("should display correct slider value", () => {
+    render(<PlaybackControls {...defaultProps} currentRecordIndex={50} />);
 
-    const progressBar = container.querySelector('[role="progressbar"]');
-    expect(progressBar).toHaveAttribute("aria-valuenow", "50");
+    const slider = screen.getByRole("slider");
+    expect(slider).toHaveAttribute("aria-valuenow", "50");
   });
 
   it("should disable buttons when records are loading", () => {
@@ -181,5 +183,85 @@ describe("PlaybackControls", () => {
     );
 
     expect(selectedButton).toBeInTheDocument();
+  });
+
+  it("should call onSeek when slider value changes", () => {
+    const onSeek = vi.fn();
+    render(<PlaybackControls {...defaultProps} onSeek={onSeek} />);
+
+    const slider = screen.getByRole("slider");
+    expect(slider).toBeInTheDocument();
+
+    // Simulate slider value change
+    fireEvent.change(slider, { target: { value: "75" } });
+    expect(onSeek).toHaveBeenCalled();
+  });
+
+  it("should disable slider when records are loading", () => {
+    render(<PlaybackControls {...defaultProps} recordsLoading={true} />);
+
+    const slider = screen.getByRole("slider");
+    expect(slider).toBeDisabled();
+  });
+
+  it("should disable slider when there are no records", () => {
+    render(<PlaybackControls {...defaultProps} totalRecords={0} />);
+
+    const slider = screen.getByRole("slider");
+    expect(slider).toBeDisabled();
+  });
+
+  it("should set slider max to totalRecords - 1", () => {
+    render(<PlaybackControls {...defaultProps} totalRecords={100} />);
+
+    const slider = screen.getByRole("slider");
+    expect(slider).toHaveAttribute("aria-valuemax", "99");
+  });
+
+  it("should set slider min to 0", () => {
+    render(<PlaybackControls {...defaultProps} totalRecords={100} />);
+
+    const slider = screen.getByRole("slider");
+    expect(slider).toHaveAttribute("aria-valuemin", "0");
+  });
+
+  it("should have correct aria-label for accessibility", () => {
+    render(<PlaybackControls {...defaultProps} />);
+
+    const slider = screen.getByRole("slider");
+    expect(slider).toHaveAttribute("aria-label", "Playback position");
+  });
+
+  it("should handle seeking to first record", () => {
+    const onSeek = vi.fn();
+    render(
+      <PlaybackControls
+        {...defaultProps}
+        currentRecordIndex={50}
+        onSeek={onSeek}
+      />,
+    );
+
+    const slider = screen.getByRole("slider");
+
+    fireEvent.change(slider, { target: { value: "0" } });
+    expect(onSeek).toHaveBeenCalled();
+  });
+
+  it("should handle seeking to last record", () => {
+    const onSeek = vi.fn();
+    render(
+      <PlaybackControls
+        {...defaultProps}
+        currentRecordIndex={0}
+        totalRecords={100}
+        onSeek={onSeek}
+      />,
+    );
+
+    const slider = screen.getByRole("slider");
+
+    fireEvent.change(slider, { target: { value: "99" } });
+    expect(onSeek).toHaveBeenCalled();
   });
 });

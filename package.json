@@ -33,6 +33,7 @@
     "react-dropzone": "^14.3.8",
     "react-leaflet": "^5.0.0",
     "swr": "^2.3.7",
+    "video.js": "^8.23.4",
     "yup": "^1.7.1"
   },
   "devDependencies": {
@@ -44,6 +45,7 @@
     "@types/node": "^25.0.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19",
+    "@types/video.js": "^7.3.58",
     "@vitejs/plugin-react": "^5.1.2",
     "@vitest/coverage-v8": "^4.0.15",
     "eslint": "^9.39.1",

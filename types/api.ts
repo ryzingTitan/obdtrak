@@ -22,6 +22,7 @@ export interface Session {
   carYear: number;
   carMake: string;
   carModel: string;
+  videoUrl?: string;
 }
 
 export interface SessionData {

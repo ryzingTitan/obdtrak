@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import dynamic from "next/dynamic";
-import { Box } from "@mui/material";
+import { Box, Alert } from "@mui/material";
 import { getTempColor } from "./_components/telemetryUtils";
 import { useSessions } from "@/hooks/useSessions";
 import { useRecords } from "@/hooks/useRecords";
@@ -18,6 +18,7 @@ import {
   GAUGE_LIMITS,
   type TelemetryData,
 } from "./_components/TelemetryGauges";
+import ViewTabs from "./_components/ViewTabs";
 
 // Dynamically import TrackMap to avoid SSR issues with Leaflet
 const TrackMap = dynamic(
@@ -26,11 +27,22 @@ const TrackMap = dynamic(
   { ssr: false },
 );
 
+// Dynamically import VideoPlayer to avoid SSR issues
+const VideoPlayer = dynamic(
+  () =>
+    import("./_components/VideoPlayer").then((mod) => ({
+      default: mod.VideoPlayer,
+    })),
+  { ssr: false },
+);
+
 export default function Telemetry() {
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const [currentRecordIndex, setCurrentRecordIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeed>(1);
+  const [currentView, setCurrentView] = useState<number>(0); // 0 = map, 1 = video
+  const [videoDuration, setVideoDuration] = useState<number | null>(null);
 
   const { sessions, isLoading: sessionsLoading } = useSessions();
   const { records, isLoading: recordsLoading } = useRecords(
@@ -126,7 +138,56 @@ export default function Telemetry() {
     [telemetry.intakeAirTemperature],
   );
 
+  // Calculate video time from currentRecordIndex
+  const currentVideoTime = useMemo(() => {
+    if (records.length === 0 || currentRecordIndex === 0) return 0;
+    const startTime = new Date(records[0].timestamp).getTime();
+    const currentTime = new Date(
+      records[currentRecordIndex].timestamp,
+    ).getTime();
+    return (currentTime - startTime) / 1000; // convert to seconds
+  }, [records, currentRecordIndex]);
+
+  // Calculate total telemetry duration
+  const telemetryDuration = useMemo(() => {
+    if (records.length < 2) return 0;
+    const startTime = new Date(records[0].timestamp).getTime();
+    const endTime = new Date(records[records.length - 1].timestamp).getTime();
+    return (endTime - startTime) / 1000;
+  }, [records]);
+
+  // Check for duration mismatch (> 5 second difference)
+  const hasDurationMismatch = useMemo(() => {
+    if (!videoDuration || !telemetryDuration) return false;
+    return Math.abs(videoDuration - telemetryDuration) > 5;
+  }, [videoDuration, telemetryDuration]);
+
   // Event handlers wrapped in useCallback to prevent unnecessary re-renders
+  const handleVideoSeek = useCallback(
+    (videoTime: number) => {
+      if (records.length === 0) return;
+
+      // Find closest record index for given video time
+      const startTime = new Date(records[0].timestamp).getTime();
+      const targetTimestamp = startTime + videoTime * 1000;
+
+      let closestIndex = 0;
+      let minDiff = Infinity;
+
+      records.forEach((record, index) => {
+        const recordTime = new Date(record.timestamp).getTime();
+        const diff = Math.abs(recordTime - targetTimestamp);
+        if (diff < minDiff) {
+          minDiff = diff;
+          closestIndex = index;
+        }
+      });
+
+      setCurrentRecordIndex(closestIndex);
+    },
+    [records],
+  );
+
   const handlePlayPause = useCallback(() => {
     if (records.length === 0) return;
 
@@ -149,6 +210,11 @@ export default function Telemetry() {
     // Reset playback when session changes
     setCurrentRecordIndex(0);
     setIsPlaying(false);
+    setVideoDuration(null);
+    // Reset to map view if new session has no video
+    if (!newValue?.videoUrl) {
+      setCurrentView(0);
+    }
   }, []);
 
   const handleSpeedChange = useCallback(
@@ -205,6 +271,15 @@ export default function Telemetry() {
         />
       )}
 
+      {/* View Toggle Tabs */}
+      {selectedSession && records.length > 0 && (
+        <ViewTabs
+          currentView={currentView}
+          onViewChange={setCurrentView}
+          hasVideo={!!selectedSession.videoUrl}
+        />
+      )}
+
       {/* Main Layout */}
       {selectedSession && records.length > 0 && (
         <Box
@@ -214,7 +289,7 @@ export default function Telemetry() {
             gap: 2,
           }}
         >
-          {/* Track Map Section */}
+          {/* Map/Video Section */}
           <Box
             sx={{
               flex: { xs: "initial", md: "7" },
@@ -222,10 +297,31 @@ export default function Telemetry() {
               minWidth: 0,
             }}
           >
-            <TrackMap
-              latitude={mapLocation.latitude}
-              longitude={mapLocation.longitude}
-            />
+            {currentView === 0 ? (
+              <TrackMap
+                latitude={mapLocation.latitude}
+                longitude={mapLocation.longitude}
+              />
+            ) : (
+              selectedSession.videoUrl && (
+                <>
+                  {hasDurationMismatch && (
+                    <Alert severity="warning" sx={{ mb: 1 }}>
+                      Video duration ({videoDuration?.toFixed(1)}s) doesn&apos;t
+                      match telemetry duration ({telemetryDuration.toFixed(1)}s)
+                    </Alert>
+                  )}
+                  <VideoPlayer
+                    videoUrl={selectedSession.videoUrl}
+                    currentTime={currentVideoTime}
+                    isPlaying={isPlaying}
+                    onTimeUpdate={handleVideoSeek}
+                    onDurationChange={setVideoDuration}
+                    onError={(error) => console.error("Video error:", error)}
+                  />
+                </>
+              )
+            )}
           </Box>
 
           {/* Telemetry Gauges Section */}
